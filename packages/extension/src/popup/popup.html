@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Offer Tracker</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <div id="app">
+    <!-- Login view -->
+    <div id="view-login" class="view hidden">
+      <h1>Offer Tracker</h1>
+      <form id="login-form">
+        <input type="email" id="email" placeholder="E-mail" required />
+        <input type="password" id="password" placeholder="Hasło" required />
+        <button type="submit">Zaloguj się</button>
+        <p id="login-error" class="error hidden"></p>
+      </form>
+    </div>
+
+    <!-- Save job view -->
+    <div id="view-save" class="view hidden">
+      <header>
+        <span id="portal-badge" class="badge"></span>
+        <button id="btn-logout" class="btn-link">Wyloguj</button>
+      </header>
+      <form id="save-form">
+        <input type="text" id="f-title" placeholder="Stanowisko" required />
+        <input type="text" id="f-company" placeholder="Firma" required />
+        <input type="text" id="f-location" placeholder="Lokalizacja" />
+        <input type="text" id="f-salary" placeholder="Widełki" />
+        <input type="url" id="f-url" placeholder="URL oferty" required />
+        <select id="f-status">
+          <option value="APPLIED">Aplikowano</option>
+          <option value="INTERVIEW">Rozmowa</option>
+          <option value="OFFER">Oferta</option>
+          <option value="REJECTED">Odrzucono</option>
+          <option value="IGNORED">Ignoruj</option>
+        </select>
+        <textarea id="f-notes" placeholder="Notatki (opcjonalnie)" rows="2"></textarea>
+        <button type="submit" id="btn-save">Zapisz aplikację</button>
+        <p id="save-error" class="error hidden"></p>
+        <p id="save-success" class="success hidden">Zapisano!</p>
+      </form>
+    </div>
+
+    <!-- Not a job page view -->
+    <div id="view-not-job" class="view hidden">
+      <p>Otwórz ofertę pracy na LinkedIn, JustJoin lub Pracuj.pl</p>
+    </div>
+  </div>
+  <script type="module" src="popup.ts"></script>
+</body>
+</html>
