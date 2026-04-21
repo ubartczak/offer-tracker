@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Offer Tracker — Mockup</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: { 50: '#f0f9ff', 100: '#e0f2fe', 500: '#0ea5e9', 600: '#0284c7', 700: '#0369a1' }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .screen { display: none; }
+    .screen.active { display: block; }
+    .nav-btn.active { background: #0284c7; color: white; }
+    .status-APPLIED    { background:#dbeafe; color:#1d4ed8; }
+    .status-INTERVIEW  { background:#fef9c3; color:#854d0e; }
+    .status-OFFER      { background:#dcfce7; color:#166534; }
+    .status-REJECTED   { background:#fee2e2; color:#991b1b; }
+    .status-GHOSTED    { background:#f3f4f6; color:#6b7280; }
+    .kanban-col { min-height: 300px; }
+    .drag-card { cursor: grab; }
+  </style>
+</head>
+<body class="bg-gray-50 font-sans">
+
+<!-- ─── NAV SWITCHER (mockup only) ─────────────────────────────────────── -->
+<div class="fixed top-0 left-0 right-0 z-50 bg-gray-900 text-white text-xs flex gap-1 px-3 py-1.5 items-center">
+  <span class="text-gray-400 mr-2">Mockup — ekran:</span>
+  <button onclick="show('login')"    class="nav-btn px-2 py-0.5 rounded" id="nav-login">Login</button>
+  <button onclick="show('register')" class="nav-btn px-2 py-0.5 rounded" id="nav-register">Rejestracja</button>
+  <button onclick="show('list')"     class="nav-btn px-2 py-0.5 rounded" id="nav-list">Lista ofert</button>
+  <button onclick="show('kanban')"   class="nav-btn px-2 py-0.5 rounded" id="nav-kanban">Kanban</button>
+  <button onclick="show('add')"      class="nav-btn px-2 py-0.5 rounded" id="nav-add">Dodaj ofertę</button>
+  <button onclick="show('detail')"   class="nav-btn px-2 py-0.5 rounded" id="nav-detail">Szczegóły</button>
+</div>
+<div class="pt-8">
+
+<!-- ════════════════════════════════════════════════════════════════════════
+     SCREEN 1 — LOGIN
+════════════════════════════════════════════════════════════════════════ -->
+<div id="screen-login" class="screen min-h-screen flex items-center justify-center bg-gradient-to-br from-brand-50 to-slate-100">
+  <div class="w-full max-w-sm">
+    <div class="text-center mb-8">
+      <div class="inline-flex items-center justify-center w-12 h-12 bg-brand-600 rounded-xl mb-3">
+        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+      </div>
+      <h1 class="text-2xl font-bold text-gray-900">Offer Tracker</h1>
+      <p class="text-gray-500 text-sm mt-1">Zaloguj się do swojego konta</p>
+    </div>
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+          <input type="email" placeholder="ty@example.com" value="test@test.com"
+            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Hasło</label>
+          <input type="password" placeholder="••••••••" value="haslo123"
+            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
+        </div>
+        <button onclick="show('list')"
+          class="w-full bg-brand-600 hover:bg-brand-700 text-white font-medium py-2 rounded-lg text-sm transition-colors">
+          Zaloguj się
+        </button>
+      </div>
+      <p class="text-center text-sm text-gray-500 mt-4">
+        Nie masz konta?
+        <a onclick="show('register')" class="text-brand-600 font-medium cursor-pointer hover:underline">Zarejestruj się</a>
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════════════
+     SCREEN 2 — REGISTER
+════════════════════════════════════════════════════════════════════════ -->
+<div id="screen-register" class="screen min-h-screen flex items-center justify-center bg-gradient-to-br from-brand-50 to-slate-100">
+  <div class="w-full max-w-sm">
+    <div class="text-center mb-8">
+      <div class="inline-flex items-center justify-center w-12 h-12 bg-brand-600 rounded-xl mb-3">
+        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+      </div>
+      <h1 class="text-2xl font-bold text-gray-900">Offer Tracker</h1>
+      <p class="text-gray-500 text-sm mt-1">Utwórz nowe konto</p>
+    </div>
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+          <input type="email" placeholder="ty@example.com"
+            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Hasło</label>
+          <input type="password" placeholder="min. 8 znaków"
+            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Powtórz hasło</label>
+          <input type="password" placeholder="••••••••"
+            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
+        </div>
+        <button onclick="show('list')"
+          class="w-full bg-brand-600 hover:bg-brand-700 text-white font-medium py-2 rounded-lg text-sm transition-colors">
+          Utwórz konto
+        </button>
+      </div>
+      <p class="text-center text-sm text-gray-500 mt-4">
+        Masz już konto?
+        <a onclick="show('login')" class="text-brand-600 font-medium cursor-pointer hover:underline">Zaloguj się</a>
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════════════
+     SCREEN 3 — LISTA OFERT
+════════════════════════════════════════════════════════════════════════ -->
+<div id="screen-list" class="screen min-h-screen">
+  <!-- Sidebar + main layout -->
+  <div class="flex h-screen overflow-hidden">
+
+    <!-- Sidebar -->
+    <aside class="w-56 bg-white border-r border-gray-200 flex flex-col">
+      <div class="px-5 py-5 border-b border-gray-100">
+        <div class="flex items-center gap-2">
+          <div class="w-7 h-7 bg-brand-600 rounded-lg flex items-center justify-center">
+            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+          </div>
+          <span class="font-bold text-gray-900 text-sm">Offer Tracker</span>
+        </div>
+      </div>
+      <nav class="flex-1 px-3 py-4 space-y-1">
+        <a onclick="show('list')" class="flex items-center gap-3 px-3 py-2 rounded-lg bg-brand-50 text-brand-700 text-sm font-medium cursor-pointer">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
+          Lista ofert
+        </a>
+        <a onclick="show('kanban')" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm cursor-pointer">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"/></svg>
+          Kanban
+        </a>
+      </nav>
+      <div class="px-3 py-4 border-t border-gray-100">
+        <div class="flex items-center gap-3 px-3 py-2">
+          <div class="w-7 h-7 bg-gray-200 rounded-full flex items-center justify-center text-xs font-bold text-gray-600">U</div>
+          <div class="flex-1 min-w-0">
+            <p class="text-xs font-medium text-gray-900 truncate">test@test.com</p>
+          </div>
+          <button onclick="show('login')" title="Wyloguj" class="text-gray-400 hover:text-gray-600">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main content -->
+    <main class="flex-1 overflow-auto bg-gray-50">
+      <div class="px-8 py-6">
+
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-6">
+          <div>
+            <h2 class="text-xl font-bold text-gray-900">Moje aplikacje</h2>
+            <p class="text-sm text-gray-500 mt-0.5">12 ofert łącznie</p>
+          </div>
+          <button onclick="show('add')"
+            class="flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            Dodaj ofertę
+          </button>
+        </div>
+
+        <!-- Stats -->
+        <div class="grid grid-cols-5 gap-3 mb-6">
+          <div class="bg-white rounded-xl border border-gray-100 px-4 py-3">
+            <p class="text-xs text-gray-500">Wszystkie</p>
+            <p class="text-2xl font-bold text-gray-900 mt-1">12</p>
+          </div>
+          <div class="bg-white rounded-xl border border-gray-100 px-4 py-3">
+            <p class="text-xs text-gray-500">Aplikowano</p>
+            <p class="text-2xl font-bold text-blue-600 mt-1">7</p>
+          </div>
+          <div class="bg-white rounded-xl border border-gray-100 px-4 py-3">
+            <p class="text-xs text-gray-500">Rozmowa</p>
+            <p class="text-2xl font-bold text-yellow-600 mt-1">2</p>
+          </div>
+          <div class="bg-white rounded-xl border border-gray-100 px-4 py-3">
+            <p class="text-xs text-gray-500">Oferta</p>
+            <p class="text-2xl font-bold text-green-600 mt-1">1</p>
+          </div>
+          <div class="bg-white rounded-xl border border-gray-100 px-4 py-3">
+            <p class="text-xs text-gray-500">Odrzucono</p>
+            <p class="text-2xl font-bold text-red-500 mt-1">2</p>
+          </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="flex gap-3 mb-4">
+          <input type="search" placeholder="Szukaj stanowiska, firmy..."
+            class="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-brand-500" />
+          <select class="border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none text-gray-600">
+            <option>Wszystkie statusy</option>
+            <option>Aplikowano</option>
+            <option>Rozmowa</option>
+            <option>Oferta</option>
+            <option>Odrzucono</option>
+            <option>Brak odpowiedzi</option>
+          </select>
+          <select class="border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none text-gray-600">
+            <option>Wszystkie portale</option>
+            <option>LinkedIn</option>
+            <option>JustJoin.it</option>
+            <option>Pracuj.pl</option>
+            <option>NoFluffJobs</option>
+          </select>
+        </div>
+
+        <!-- Table -->
+        <div class="bg-white rounded-xl border border-gray-100 overflow-hidden">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="border-b border-gray-100 text-left">
+                <th class="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Stanowisko</th>
+                <th class="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Firma</th>
+                <th class="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Portal</th>
+                <th class="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
+                <th class="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Wynagrodzenie</th>
+                <th class="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Data</th>
+                <th class="px-4 py-3"></th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-50">
+              <tr class="hover:bg-gray-50 cursor-pointer" onclick="show('detail')">
+                <td class="px-4 py-3 font-medium text-gray-900">Frontend Developer</td>
+                <td class="px-4 py-3 text-gray-600">Allegro</td>
+                <td class="px-4 py-3"><span class="text-xs bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full">LinkedIn</span></td>
+                <td class="px-4 py-3"><span class="status-INTERVIEW text-xs px-2 py-0.5 rounded-full font-medium">Rozmowa</span></td>
+                <td class="px-4 py-3 text-gray-600">15 000 – 22 000 zł</td>
+                <td class="px-4 py-3 text-gray-400">18.04.2026</td>
+                <td class="px-4 py-3"><button class="text-gray-300 hover:text-gray-500">···</button></td>
+              </tr>
+              <tr class="hover:bg-gray-50 cursor-pointer" onclick="show('detail')">
+                <td class="px-4 py-3 font-medium text-gray-900">React Developer</td>
+                <td class="px-4 py-3 text-gray-600">Bolt</td>
+                <td class="px-4 py-3"><span class="text-xs bg-orange-50 text-orange-700 px-2 py-0.5 rounded-full">JustJoin</span></td>
+                <td class="px-4 py-3"><span class="status-APPLIED text-xs px-2 py-0.5 rounded-full font-medium">Aplikowano</span></td>
+                <td class="px-4 py-3 text-gray-600">18 000 – 25 000 zł</td>
+                <td class="px-4 py-3 text-gray-400">17.04.2026</td>
+                <td class="px-4 py-3"><button class="text-gray-300 hover:text-gray-500">···</button></td>
+              </tr>
+              <tr class="hover:bg-gray-50 cursor-pointer" onclick="show('detail')">
+                <td class="px-4 py-3 font-medium text-gray-900">Software Engineer (React)</td>
+                <td class="px-4 py-3 text-gray-600">cupsco</td>
+                <td class="px-4 py-3"><span class="text-xs bg-purple-50 text-purple-700 px-2 py-0.5 rounded-full">Pracuj.pl</span></td>
+                <td class="px-4 py-3"><span class="status-APPLIED text-xs px-2 py-0.5 rounded-full font-medium">Aplikowano</span></td>
+                <td class="px-4 py-3 text-gray-400">—</td>
+                <td class="px-4 py-3 text-gray-400">20.04.2026</td>
+                <td class="px-4 py-3"><button class="text-gray-300 hover:text-gray-500">···</button></td>
+              </tr>
+              <tr class="hover:bg-gray-50 cursor-pointer">
+                <td class="px-4 py-3 font-medium text-gray-900">Senior Frontend Dev</td>
+                <td class="px-4 py-3 text-gray-600">CD Projekt RED</td>
+                <td class="px-4 py-3"><span class="text-xs bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full">LinkedIn</span></td>
+                <td class="px-4 py-3"><span class="status-OFFER text-xs px-2 py-0.5 rounded-full font-medium">Oferta!</span></td>
+                <td class="px-4 py-3 text-gray-600">20 000 – 28 000 zł</td>
+                <td class="px-4 py-3 text-gray-400">10.04.2026</td>
+                <td class="px-4 py-3"><button class="text-gray-300 hover:text-gray-500">···</button></td>
+              </tr>
+              <tr class="hover:bg-gray-50 cursor-pointer">
+                <td class="px-4 py-3 font-medium text-gray-900">Front-end Developer</td>
+                <td class="px-4 py-3 text-gray-600">Grupa PracujO</td>
+                <td class="px-4 py-3"><span class="text-xs bg-purple-50 text-purple-700 px-2 py-0.5 rounded-full">Pracuj.pl</span></td>
+                <td class="px-4 py-3"><span class="status-REJECTED text-xs px-2 py-0.5 rounded-full font-medium">Odrzucono</span></td>
+                <td class="px-4 py-3 text-gray-400">—</td>
+                <td class="px-4 py-3 text-gray-400">20.04.2026</td>
+                <td class="px-4 py-3"><button class="text-gray-300 hover:text-gray-500">···</button></td>
+              </tr>
+              <tr class="hover:bg-gray-50 cursor-pointer">
+                <td class="px-4 py-3 font-medium text-gray-900">TypeScript Engineer</td>
+                <td class="px-4 py-3 text-gray-600">Shopify</td>
+                <td class="px-4 py-3"><span class="text-xs bg-green-50 text-green-700 px-2 py-0.5 rounded-full">NoFluffJobs</span></td>
+                <td class="px-4 py-3"><span class="status-GHOSTED text-xs px-2 py-0.5 rounded-full font-medium">Brak odp.</span></td>
+                <td class="px-4 py-3 text-gray-600">$5 000 / mies.</td>
+                <td class="px-4 py-3 text-gray-400">05.04.2026</td>
+                <td class="px-4 py-3"><button class="text-gray-300 hover:text-gray-500">···</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════════════
+     SCREEN 4 — KANBAN
+════════════════════════════════════════════════════════════════════════ -->
+<div id="screen-kanban" class="screen min-h-screen">
+  <div class="flex h-screen overflow-hidden">
+    <!-- Sidebar (same) -->
+    <aside class="w-56 bg-white border-r border-gray-200 flex flex-col">
+      <div class="px-5 py-5 border-b border-gray-100">
+        <div class="flex items-center gap-2">
+          <div class="w-7 h-7 bg-brand-600 rounded-lg flex items-center justify-center">
+            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+          </div>
+          <span class="font-bold text-gray-900 text-sm">Offer Tracker</span>
+        </div>
+      </div>
+      <nav class="flex-1 px-3 py-4 space-y-1">
+        <a onclick="show('list')" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm cursor-pointer">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
+          Lista ofert
+        </a>
+        <a onclick="show('kanban')" class="flex items-center gap-3 px-3 py-2 rounded-lg bg-brand-50 text-brand-700 text-sm font-medium cursor-pointer">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"/></svg>
+          Kanban
+        </a>
+      </nav>
+      <div class="px-3 py-4 border-t border-gray-100">
+        <div class="flex items-center gap-3 px-3 py-2">
+          <div class="w-7 h-7 bg-gray-200 rounded-full flex items-center justify-center text-xs font-bold text-gray-600">U</div>
+          <div class="flex-1 min-w-0"><p class="text-xs font-medium text-gray-900 truncate">test@test.com</p></div>
+          <button onclick="show('login')" class="text-gray-400 hover:text-gray-600">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Kanban board -->
+    <main class="flex-1 overflow-auto bg-gray-50 px-6 py-6">
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="text-xl font-bold text-gray-900">Kanban</h2>
+        <button onclick="show('add')" class="flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium px-4 py-2 rounded-lg">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+          Dodaj ofertę
+        </button>
+      </div>
+      <div class="flex gap-4 h-full pb-6">
+        <!-- Col: Aplikowano -->
+        <div class="flex-1 min-w-48">
+          <div class="flex items-center gap-2 mb-3">
+            <div class="w-2 h-2 rounded-full bg-blue-500"></div>
+            <span class="text-sm font-semibold text-gray-700">Aplikowano</span>
+            <span class="ml-auto text-xs bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded-full">7</span>
+          </div>
+          <div class="kanban-col space-y-2">
+            <div class="bg-white rounded-xl border border-gray-100 p-3 drag-card hover:border-brand-300 cursor-pointer" onclick="show('detail')">
+              <p class="font-medium text-sm text-gray-900">React Developer</p>
+              <p class="text-xs text-gray-500 mt-0.5">Bolt</p>
+              <div class="flex items-center gap-2 mt-2">
+                <span class="text-xs bg-orange-50 text-orange-700 px-1.5 py-0.5 rounded-full">JustJoin</span>
+              </div>
+              <p class="text-xs text-gray-400 mt-2">17.04.2026</p>
+            </div>
+            <div class="bg-white rounded-xl border border-gray-100 p-3 drag-card hover:border-brand-300 cursor-pointer" onclick="show('detail')">
+              <p class="font-medium text-sm text-gray-900">Software Engineer (React)</p>
+              <p class="text-xs text-gray-500 mt-0.5">cupsco</p>
+              <div class="flex items-center gap-2 mt-2">
+                <span class="text-xs bg-purple-50 text-purple-700 px-1.5 py-0.5 rounded-full">Pracuj.pl</span>
+              </div>
+              <p class="text-xs text-gray-400 mt-2">20.04.2026</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Col: Rozmowa -->
+        <div class="flex-1 min-w-48">
+          <div class="flex items-center gap-2 mb-3">
+            <div class="w-2 h-2 rounded-full bg-yellow-500"></div>
+            <span class="text-sm font-semibold text-gray-700">Rozmowa</span>
+            <span class="ml-auto text-xs bg-yellow-100 text-yellow-700 px-1.5 py-0.5 rounded-full">2</span>
+          </div>
+          <div class="kanban-col space-y-2">
+            <div class="bg-white rounded-xl border border-gray-100 p-3 drag-card hover:border-brand-300 cursor-pointer" onclick="show('detail')">
+              <p class="font-medium text-sm text-gray-900">Frontend Developer</p>
+              <p class="text-xs text-gray-500 mt-0.5">Allegro</p>
+              <div class="flex items-center gap-2 mt-2">
+                <span class="text-xs bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded-full">LinkedIn</span>
+              </div>
+              <p class="text-xs text-gray-600 mt-2 font-medium">15 000 – 22 000 zł</p>
+              <p class="text-xs text-gray-400">18.04.2026</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Col: Oferta -->
+        <div class="flex-1 min-w-48">
+          <div class="flex items-center gap-2 mb-3">
+            <div class="w-2 h-2 rounded-full bg-green-500"></div>
+            <span class="text-sm font-semibold text-gray-700">Oferta</span>
+            <span class="ml-auto text-xs bg-green-100 text-green-700 px-1.5 py-0.5 rounded-full">1</span>
+          </div>
+          <div class="kanban-col space-y-2">
+            <div class="bg-white rounded-xl border border-green-200 p-3 drag-card hover:border-green-400 cursor-pointer">
+              <p class="font-medium text-sm text-gray-900">Senior Frontend Dev</p>
+              <p class="text-xs text-gray-500 mt-0.5">CD Projekt RED</p>
+              <div class="flex items-center gap-2 mt-2">
+                <span class="text-xs bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded-full">LinkedIn</span>
+              </div>
+              <p class="text-xs text-gray-600 mt-2 font-medium">20 000 – 28 000 zł</p>
+              <p class="text-xs text-gray-400">10.04.2026</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Col: Odrzucono -->
+        <div class="flex-1 min-w-48">
+          <div class="flex items-center gap-2 mb-3">
+            <div class="w-2 h-2 rounded-full bg-red-400"></div>
+            <span class="text-sm font-semibold text-gray-700">Odrzucono</span>
+            <span class="ml-auto text-xs bg-red-100 text-red-600 px-1.5 py-0.5 rounded-full">2</span>
+          </div>
+          <div class="kanban-col space-y-2">
+            <div class="bg-white rounded-xl border border-gray-100 p-3 drag-card hover:border-brand-300 cursor-pointer">
+              <p class="font-medium text-sm text-gray-900">Front-end Developer</p>
+              <p class="text-xs text-gray-500 mt-0.5">Grupa PracujO</p>
+              <div class="flex items-center gap-2 mt-2">
+                <span class="text-xs bg-purple-50 text-purple-700 px-1.5 py-0.5 rounded-full">Pracuj.pl</span>
+              </div>
+              <p class="text-xs text-gray-400 mt-2">20.04.2026</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Col: Brak odpowiedzi -->
+        <div class="flex-1 min-w-48">
+          <div class="flex items-center gap-2 mb-3">
+            <div class="w-2 h-2 rounded-full bg-gray-400"></div>
+            <span class="text-sm font-semibold text-gray-700">Brak odp.</span>
+            <span class="ml-auto text-xs bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded-full">2</span>
+          </div>
+          <div class="kanban-col space-y-2">
+            <div class="bg-white rounded-xl border border-gray-100 p-3 drag-card hover:border-brand-300 cursor-pointer">
+              <p class="font-medium text-sm text-gray-900">TypeScript Engineer</p>
+              <p class="text-xs text-gray-500 mt-0.5">Shopify</p>
+              <div class="flex items-center gap-2 mt-2">
+                <span class="text-xs bg-green-50 text-green-700 px-1.5 py-0.5 rounded-full">NoFluffJobs</span>
+              </div>
+              <p class="text-xs text-gray-400 mt-2">05.04.2026</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════════════
+     SCREEN 5 — DODAJ OFERTĘ (modal overlay on list)
+════════════════════════════════════════════════════════════════════════ -->
+<div id="screen-add" class="screen min-h-screen">
+  <div class="flex h-screen overflow-hidden">
+    <!-- Sidebar -->
+    <aside class="w-56 bg-white border-r border-gray-200 flex flex-col">
+      <div class="px-5 py-5 border-b border-gray-100">
+        <div class="flex items-center gap-2">
+          <div class="w-7 h-7 bg-brand-600 rounded-lg flex items-center justify-center">
+            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+          </div>
+          <span class="font-bold text-gray-900 text-sm">Offer Tracker</span>
+        </div>
+      </div>
+      <nav class="flex-1 px-3 py-4 space-y-1">
+        <a onclick="show('list')" class="flex items-center gap-3 px-3 py-2 rounded-lg bg-brand-50 text-brand-700 text-sm font-medium cursor-pointer">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
+          Lista ofert
+        </a>
+        <a onclick="show('kanban')" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm cursor-pointer">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"/></svg>
+          Kanban
+        </a>
+      </nav>
+    </aside>
+
+    <!-- Blurred background + modal -->
+    <main class="flex-1 bg-gray-900/30 flex items-center justify-center">
+      <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg mx-4">
+        <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+          <h3 class="text-base font-bold text-gray-900">Dodaj nową aplikację</h3>
+          <button onclick="show('list')" class="text-gray-400 hover:text-gray-600">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
+        </div>
+        <div class="px-6 py-5 space-y-4">
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-medium text-gray-700 mb-1">Stanowisko *</label>
+              <input type="text" placeholder="np. Frontend Developer"
+                class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-700 mb-1">Firma *</label>
+              <input type="text" placeholder="np. Allegro"
+                class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
+            </div>
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-gray-700 mb-1">URL oferty *</label>
+            <input type="url" placeholder="https://..."
+              class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-medium text-gray-700 mb-1">Portal *</label>
+              <select class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 text-gray-600">
+                <option value="">Wybierz portal</option>
+                <option>LinkedIn</option>
+                <option>JustJoin.it</option>
+                <option>Pracuj.pl</option>
+                <option>NoFluffJobs</option>
+                <option>Inne</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-700 mb-1">Lokalizacja</label>
+              <input type="text" placeholder="np. Warszawa / Remote"
+                class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-medium text-gray-700 mb-1">Wynagrodzenie</label>
+              <input type="text" placeholder="np. 15 000 – 20 000 zł"
+                class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" />
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-700 mb-1">Status</label>
+              <select class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 text-gray-600">
+                <option>Aplikowano</option>
+                <option>Rozmowa</option>
+                <option>Oferta</option>
+                <option>Odrzucono</option>
+                <option>Brak odpowiedzi</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-gray-700 mb-1">Notatki</label>
+            <textarea rows="2" placeholder="Opcjonalne notatki..."
+              class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 resize-none"></textarea>
+          </div>
+        </div>
+        <div class="flex justify-end gap-3 px-6 py-4 border-t border-gray-100">
+          <button onclick="show('list')" class="px-4 py-2 text-sm text-gray-600 hover:text-gray-800">Anuluj</button>
+          <button onclick="show('list')" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-medium rounded-lg transition-colors">
+            Zapisz aplikację
+          </button>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════════════
+     SCREEN 6 — SZCZEGÓŁY OFERTY
+════════════════════════════════════════════════════════════════════════ -->
+<div id="screen-detail" class="screen min-h-screen">
+  <div class="flex h-screen overflow-hidden">
+    <!-- Sidebar -->
+    <aside class="w-56 bg-white border-r border-gray-200 flex flex-col">
+      <div class="px-5 py-5 border-b border-gray-100">
+        <div class="flex items-center gap-2">
+          <div class="w-7 h-7 bg-brand-600 rounded-lg flex items-center justify-center">
+            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+          </div>
+          <span class="font-bold text-gray-900 text-sm">Offer Tracker</span>
+        </div>
+      </div>
+      <nav class="flex-1 px-3 py-4 space-y-1">
+        <a onclick="show('list')" class="flex items-center gap-3 px-3 py-2 rounded-lg bg-brand-50 text-brand-700 text-sm font-medium cursor-pointer">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
+          Lista ofert
+        </a>
+        <a onclick="show('kanban')" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-600 hover:bg-gray-50 text-sm cursor-pointer">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"/></svg>
+          Kanban
+        </a>
+      </nav>
+    </aside>
+
+    <main class="flex-1 overflow-auto bg-gray-50 px-8 py-6">
+      <!-- Back -->
+      <button onclick="show('list')" class="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 mb-5">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+        Wróć do listy
+      </button>
+
+      <div class="max-w-2xl">
+        <!-- Header card -->
+        <div class="bg-white rounded-2xl border border-gray-100 p-6 mb-4">
+          <div class="flex items-start justify-between">
+            <div>
+              <h2 class="text-xl font-bold text-gray-900">Frontend Developer</h2>
+              <p class="text-gray-600 mt-1">Allegro · Warszawa / Remote</p>
+              <div class="flex items-center gap-2 mt-3">
+                <span class="status-INTERVIEW text-xs px-2.5 py-1 rounded-full font-medium">Rozmowa</span>
+                <span class="text-xs bg-blue-50 text-blue-700 px-2.5 py-1 rounded-full">LinkedIn</span>
+              </div>
+            </div>
+            <div class="flex gap-2">
+              <button class="text-sm border border-gray-200 hover:border-gray-300 text-gray-600 px-3 py-1.5 rounded-lg">Edytuj</button>
+              <button class="text-sm border border-red-200 hover:border-red-300 text-red-500 px-3 py-1.5 rounded-lg">Usuń</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Details -->
+        <div class="bg-white rounded-2xl border border-gray-100 p-6 mb-4">
+          <h3 class="text-sm font-semibold text-gray-700 mb-4">Szczegóły</h3>
+          <div class="grid grid-cols-2 gap-y-3 text-sm">
+            <div>
+              <p class="text-gray-400 text-xs mb-0.5">Wynagrodzenie</p>
+              <p class="text-gray-900 font-medium">15 000 – 22 000 zł</p>
+            </div>
+            <div>
+              <p class="text-gray-400 text-xs mb-0.5">Data aplikacji</p>
+              <p class="text-gray-900">18 kwietnia 2026</p>
+            </div>
+            <div class="col-span-2">
+              <p class="text-gray-400 text-xs mb-0.5">URL oferty</p>
+              <a class="text-brand-600 hover:underline truncate block" href="#">https://linkedin.com/jobs/view/...</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Status change -->
+        <div class="bg-white rounded-2xl border border-gray-100 p-6 mb-4">
+          <h3 class="text-sm font-semibold text-gray-700 mb-3">Zmień status</h3>
+          <div class="flex flex-wrap gap-2">
+            <button class="text-xs px-3 py-1.5 rounded-full border border-blue-200 text-blue-700 hover:bg-blue-50">Aplikowano</button>
+            <button class="text-xs px-3 py-1.5 rounded-full bg-yellow-100 border border-yellow-300 text-yellow-800 font-medium">● Rozmowa</button>
+            <button class="text-xs px-3 py-1.5 rounded-full border border-green-200 text-green-700 hover:bg-green-50">Oferta</button>
+            <button class="text-xs px-3 py-1.5 rounded-full border border-red-200 text-red-600 hover:bg-red-50">Odrzucono</button>
+            <button class="text-xs px-3 py-1.5 rounded-full border border-gray-200 text-gray-600 hover:bg-gray-50">Brak odpowiedzi</button>
+          </div>
+        </div>
+
+        <!-- Notes -->
+        <div class="bg-white rounded-2xl border border-gray-100 p-6">
+          <h3 class="text-sm font-semibold text-gray-700 mb-3">Notatki</h3>
+          <textarea rows="4"
+            class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 resize-none"
+            placeholder="Dodaj notatki...">Rozmowa techniczna zaplanowana na 25.04. Rekruter: Anna K. Pytali o React hooks i architekturę komponentów.</textarea>
+          <button class="mt-2 text-sm text-brand-600 hover:underline">Zapisz notatki</button>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+</div><!-- end pt-8 -->
+
+<script>
+  function show(name) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('screen-' + name).classList.add('active');
+    document.getElementById('nav-' + name).classList.add('active');
+  }
+  show('login');
+</script>
+</body>
+</html>
