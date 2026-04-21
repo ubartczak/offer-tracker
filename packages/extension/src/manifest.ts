@@ -34,5 +34,8 @@ export default defineManifest({
 
   permissions: ["storage", "activeTab"],
 
-  host_permissions: ["http://localhost:3001/*"],
+  host_permissions: [
+    "http://localhost:3001/*",
+    "https://*.railway.app/*",
+  ],
 });

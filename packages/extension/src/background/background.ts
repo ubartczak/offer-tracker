@@ -1,6 +1,7 @@
 import type { AuthTokens } from "../types";
 
-const API_URL = "http://localhost:3001";
+declare const __API_URL__: string;
+const API_URL = __API_URL__;
 
 async function refreshAccessToken(): Promise<string | null> {
   const { refreshToken } = await chrome.storage.local.get("refreshToken");
