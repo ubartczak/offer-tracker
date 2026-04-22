@@ -4,3 +4,5 @@ dist/
 *.env.local
 prisma/migrations/dev.db
 .claude/
+MVP_SPEC.md
+JAM 🫙.md
