@@ -9,7 +9,7 @@ Aplikacja do śledzenia ofert pracy. Składa się z backendu REST API, wtyczki C
 | Backend | Node.js, TypeScript, Express, Prisma, PostgreSQL |
 | Frontend | React 18, TypeScript, Vite, TanStack Query, Tailwind CSS |
 | Wtyczka | Chrome Extension MV3, TypeScript, Vite + crxjs |
-| Baza danych | PostgreSQL 16 (Docker lokalnie / Railway produkcja) |
+| Baza danych | PostgreSQL 16 |
 | Monorepo | pnpm workspaces |
 
 ## Struktura
@@ -30,8 +30,7 @@ offer-tracker/
 │           ├── content/    # Scraping ofert per portal
 │           └── popup/      # UI wtyczki
 ├── design/                # Mockupy HTML
-├── docker-compose.yml
-└── IDEAS.md
+└── docker-compose.yml
 ```
 
 ## Pierwsze uruchomienie
@@ -45,42 +44,25 @@ offer-tracker/
 ### 2. Instalacja
 
 ```bash
-git clone https://github.com/ubartczak/offer-tracker.git
+git clone <repo-url>
 cd offer-tracker
 pnpm install
 ```
 
 ### 3. Zmienne środowiskowe
 
-**Backend** — utwórz `packages/api/.env`:
+Skopiuj szablony i uzupełnij wartości:
 
-```env
-DATABASE_URL="postgresql://postgres:postgres@localhost:5432/offer_tracker"
-JWT_SECRET="twoj-dlugi-losowy-string"
-JWT_REFRESH_SECRET="inny-dlugi-losowy-string"
-JWT_EXPIRES_IN="15m"
-JWT_REFRESH_EXPIRES_IN="7d"
-PORT=3001
-CLIENT_URL="http://localhost:5173"
-```
-
-**Wtyczka** — utwórz `packages/extension/.env`:
-
-```env
-VITE_API_URL=http://localhost:3001
-```
-
-**Frontend** — utwórz `packages/web/.env`:
-
-```env
-VITE_API_URL=http://localhost:3001
+```bash
+cp packages/api/.env.example packages/api/.env
+cp packages/extension/.env.example packages/extension/.env
 ```
 
 ### 4. Baza danych
 
 ```bash
 docker compose up -d
-pnpm --filter api db:push
+pnpm --filter api db:migrate
 ```
 
 ### 5. Uruchomienie
@@ -97,7 +79,7 @@ Każdy serwis uruchamiaj w osobnym terminalu.
 
 ### Instalacja w przeglądarce (tryb developerski)
 
-1. Uruchom `pnpm dev:ext` (lub `pnpm --filter extension build` dla produkcji)
+1. Uruchom `pnpm dev:ext`
 2. Chrome → `chrome://extensions`
 3. Włącz **Tryb dewelopera**
 4. **Załaduj rozpakowane** → wskaż `packages/extension/dist`
@@ -111,14 +93,13 @@ Każdy serwis uruchamiaj w osobnym terminalu.
 
 ### Obsługiwane portale
 
-- LinkedIn (`/jobs/*`)
+- LinkedIn
 - JustJoin.it
 - Pracuj.pl
 
 ## API
 
-Baza URL (lokalnie): `http://localhost:3001`  
-Baza URL (produkcja): `https://offer-tracker-production.up.railway.app`
+Baza URL (lokalnie): `http://localhost:3001`
 
 ### Auth
 
@@ -134,7 +115,7 @@ Baza URL (produkcja): `https://offer-tracker-production.up.railway.app`
 | Metoda | Endpoint | Opis |
 |---|---|---|
 | GET | `/applications` | Lista z filtrowaniem i paginacją |
-| GET | `/applications/stats` | Statystyki (response rate, podział per status/portal) |
+| GET | `/applications/stats` | Statystyki |
 | POST | `/applications` | Dodaj aplikację |
 | PATCH | `/applications/:id` | Aktualizuj status/notatki |
 | DELETE | `/applications/:id` | Usuń |
@@ -156,17 +137,8 @@ pnpm dev:api                   # API w trybie watch
 pnpm dev:web                   # Frontend w trybie watch
 pnpm dev:ext                   # Wtyczka w trybie watch
 
-pnpm --filter api db:push      # Synchronizuj schemat z bazą
-pnpm --filter api db:studio    # Prisma Studio — GUI bazy na http://localhost:5555
 pnpm --filter api db:migrate   # Utwórz migrację
+pnpm --filter api db:studio    # Prisma Studio — GUI bazy na http://localhost:5555
 
-pnpm --filter extension build  # Zbuduj wtyczkę produkcyjnie (do packages/extension/dist)
+pnpm --filter extension build  # Zbuduj wtyczkę produkcyjnie
 ```
-
-## Deployment
-
-Backend i baza działają na [Railway](https://railway.app). Szczegóły konfiguracji w [DEPLOY.md](./DEPLOY.md).
-
-## Pomysły na rozwój
-
-Zobacz [IDEAS.md](./IDEAS.md) — m.in. integracja z AI (Claude API) do analizy ofert, wykrywania duplikatów i oceny dopasowania.
