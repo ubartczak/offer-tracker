@@ -1,17 +1,21 @@
 import { defineManifest } from "@crxjs/vite-plugin";
 
-export default defineManifest({
+export default defineManifest((env) => {
+  const dev = env.mode === "development";
+  const iconDir = dev ? "icons/dev" : "icons";
+
+  return {
   manifest_version: 3,
-  name: "Offer Tracker",
+  name: dev ? "Offer Tracker [DEV]" : "Offer Tracker",
   version: "1.0.0",
   description: "Śledź swoje aplikacje o pracę jednym kliknięciem",
 
   action: {
     default_popup: "src/popup/popup.html",
     default_icon: {
-      "16": "icons/icon16.png",
-      "48": "icons/icon48.png",
-      "128": "icons/icon128.png",
+      "16": `${iconDir}/icon16.png`,
+      "48": `${iconDir}/icon48.png`,
+      "128": `${iconDir}/icon128.png`,
     },
   },
 
@@ -38,4 +42,5 @@ export default defineManifest({
     "http://localhost:3001/*",
     "https://*.railway.app/*",
   ],
+  };
 });
