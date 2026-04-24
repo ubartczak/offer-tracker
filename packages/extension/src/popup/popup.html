@@ -1,51 +1,69 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pl">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Offer Tracker</title>
-  <link rel="stylesheet" href="popup.css" />
-</head>
-<body>
-  <div id="app">
-    <!-- Login view -->
-    <div id="view-login" class="view hidden">
-      <h1>Offer Tracker</h1>
-      <form id="login-form">
-        <input type="email" id="email" placeholder="E-mail" required />
-        <input type="password" id="password" placeholder="Hasło" required />
-        <button type="submit">Zaloguj się</button>
-        <p id="login-error" class="error hidden"></p>
-      </form>
-    </div>
-
-    <!-- Save job view -->
-    <div id="view-save" class="view hidden">
-      <header>
-        <span id="portal-badge" class="badge"></span>
-        <button id="btn-logout" class="btn-link">Wyloguj</button>
-      </header>
-      <form id="save-form">
-        <input type="text" id="f-title" placeholder="Stanowisko" required />
-        <input type="text" id="f-company" placeholder="Firma" required />
-        <input type="text" id="f-location" placeholder="Lokalizacja" />
-        <input type="text" id="f-salary" placeholder="Widełki" />
-        <input type="url" id="f-url" placeholder="URL oferty" required />
-        <textarea id="f-notes" placeholder="Notatki (opcjonalnie)" rows="2"></textarea>
-        <div class="save-buttons">
-          <button type="submit" id="btn-applied">Zaaplikowano</button>
-          <button type="submit" id="btn-save-later">Zapisz na później</button>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>JAM — Logowanie</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500&family=DM+Mono&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body class="theme-peach">
+    <div id="app">
+      <div id="view-login" class="view">
+        <div class="popup-lid">
+          <span class="popup-lid__logo">JAM</span>
+          <button class="popup-lid__close">✕</button>
         </div>
-        <p id="save-error" class="error hidden"></p>
-        <p id="save-success" class="success hidden">Zapisano!</p>
-      </form>
+
+        <div class="popup-body">
+          <p class="popup-eyebrow">witaj z powrotem</p>
+          <p
+            class="popup-input popup-input--title"
+            style="
+              background: none;
+              padding-left: 0;
+              margin-bottom: 6px;
+              font-size: 20px;
+            "
+          >
+            Zaloguj się
+          </p>
+
+          <form id="login-form">
+            <input
+              class="popup-input"
+              type="email"
+              id="email"
+              placeholder="E-mail"
+              required
+            />
+            <input
+              class="popup-input"
+              type="password"
+              id="password"
+              placeholder="Hasło"
+              required
+            />
+            <p id="login-error" class="error hidden"></p>
+            <button class="popup-btn popup-btn--primary" type="submit">
+              Zaloguj się
+            </button>
+          </form>
+        </div>
+
+        <div class="popup-footer">
+          <a class="popup-footer__link" href="#" id="go-register"
+            >Nie mam konta → Zarejestruj się</a
+          >
+        </div>
+      </div>
     </div>
 
-    <!-- Not a job page view -->
-    <div id="view-not-job" class="view hidden">
-      <p>Otwórz ofertę pracy na LinkedIn, JustJoin lub Pracuj.pl</p>
-    </div>
-  </div>
-  <script type="module" src="popup.ts"></script>
-</body>
+    <script type="module" src="popup.ts"></script>
+  </body>
 </html>

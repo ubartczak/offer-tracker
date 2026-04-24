@@ -98,6 +98,12 @@ document.getElementById("login-form")!.addEventListener("submit", async (e) => {
   }
 });
 
+// Open register page in new tab
+document.getElementById("go-register")!.addEventListener("click", (e) => {
+  e.preventDefault();
+  chrome.tabs.create({ url: "http://localhost:5173/register" });
+});
+
 // Logout
 document.getElementById("btn-logout")!.addEventListener("click", async () => {
   await new Promise((r) => chrome.runtime.sendMessage({ type: "LOGOUT" }, r));
