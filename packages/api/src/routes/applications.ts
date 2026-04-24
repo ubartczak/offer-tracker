@@ -4,7 +4,7 @@ import { prisma } from "../lib/prisma";
 import { AuthRequest } from "../middleware/authenticate";
 import { ApplicationStatus, Portal } from "@prisma/client";
 
-const salaryTypeEnum = z.enum(["HOURLY", "WEEKLY", "MONTHLY", "YEARLY", "OTHER"]);
+const salaryTypeEnum = z.enum(["MONTHLY", "HOURLY"] as const);
 
 export const applicationsRouter = Router();
 
