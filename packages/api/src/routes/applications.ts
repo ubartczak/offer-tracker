@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { z } from "zod";
 import { prisma } from "../lib/prisma";
+import { sanitizeText } from "../lib/sanitize";
 import { AuthRequest } from "../middleware/authenticate";
 import { ApplicationStatus, Portal } from "@prisma/client";
 
@@ -8,41 +9,35 @@ const salaryTypeEnum = z.enum(["MONTHLY", "HOURLY"] as const);
 
 export const applicationsRouter = Router();
 
-const createSchema = z.object({
-  title: z.string().min(1),
-  company: z.string().min(1),
-  location: z.string().optional(),
-  url: z.string().url("Nieprawidłowy URL"),
+const applicationBaseSchema = z.object({
+  title: z.string().min(1).max(200).trim(),
+  company: z.string().min(1).max(200).trim(),
+  location: z.string().max(200).trim().optional(),
+  url: z.string().url("Nieprawidłowy URL").max(2048),
   portal: z.nativeEnum(Portal).default("OTHER"),
   status: z.nativeEnum(ApplicationStatus).default("APPLIED"),
-  salaryMin: z.number().int().optional(),
-  salaryMax: z.number().int().optional(),
+  salaryMin: z.number().int().min(0).max(10_000_000).optional(),
+  salaryMax: z.number().int().min(0).max(10_000_000).optional(),
   currency: z.enum(["PLN", "USD", "EUR", "OTHER"]).optional(),
   salaryType: salaryTypeEnum.default("MONTHLY"),
   interviewAt: z.string().datetime().optional(),
   replyBy: z.string().datetime().optional(),
   offerExpiresAt: z.string().datetime().optional(),
-  notes: z.string().optional(),
-  feedback: z.string().optional(),
-  contractType: z.string().max(50).optional(),
-  tags: z.array(z.string()).default([]),
+  notes: z.string().max(5000).trim().optional(),
+  feedback: z.string().max(5000).trim().optional(),
+  contractType: z.string().max(50).trim().optional(),
+  tags: z.array(z.string().max(50).trim()).max(20).default([]),
   appliedAt: z.string().datetime().optional(),
 });
 
-const updateSchema = z.object({
-  status: z.nativeEnum(ApplicationStatus).optional(),
-  salaryMin: z.number().int().optional(),
-  salaryMax: z.number().int().optional(),
-  currency: z.enum(["PLN", "USD", "EUR", "OTHER"]).optional(),
-  salaryType: salaryTypeEnum.optional(),
-  interviewAt: z.string().datetime().optional(),
-  replyBy: z.string().datetime().optional(),
-  offerExpiresAt: z.string().datetime().optional(),
-  notes: z.string().optional(),
-  feedback: z.string().optional(),
-  contractType: z.string().max(50).optional(),
-  tags: z.array(z.string()).optional(),
-});
+const createSchema = applicationBaseSchema.refine(
+  (d) => d.salaryMin == null || d.salaryMax == null || d.salaryMin <= d.salaryMax,
+  { message: "salaryMin nie może być większe niż salaryMax", path: ["salaryMin"] }
+);
+const updateSchema = applicationBaseSchema.omit({ appliedAt: true }).partial().refine(
+  (d) => d.salaryMin == null || d.salaryMax == null || d.salaryMin <= d.salaryMax,
+  { message: "salaryMin nie może być większe niż salaryMax", path: ["salaryMin"] }
+);
 
 const listQuerySchema = z.object({
   status: z.nativeEnum(ApplicationStatus).optional(),
@@ -142,6 +137,13 @@ applicationsRouter.post("/", async (req: AuthRequest, res) => {
   const application = await prisma.jobApplication.create({
     data: {
       ...rest,
+      title: sanitizeText(rest.title),
+      company: sanitizeText(rest.company),
+      location: rest.location ? sanitizeText(rest.location) : undefined,
+      notes: rest.notes ? sanitizeText(rest.notes) : undefined,
+      feedback: rest.feedback ? sanitizeText(rest.feedback) : undefined,
+      contractType: rest.contractType ? sanitizeText(rest.contractType) : undefined,
+      tags: rest.tags.map(sanitizeText),
       userId: req.user!.userId,
       appliedAt: appliedAt ? new Date(appliedAt) : new Date(),
       ...(interviewAt && { interviewAt: new Date(interviewAt) }),
@@ -175,6 +177,13 @@ applicationsRouter.patch("/:id", async (req: AuthRequest, res) => {
     where: { id: req.params.id },
     data: {
       ...rest,
+      ...(rest.title !== undefined && { title: sanitizeText(rest.title) }),
+      ...(rest.company !== undefined && { company: sanitizeText(rest.company) }),
+      ...(rest.location !== undefined && { location: sanitizeText(rest.location) }),
+      ...(rest.notes !== undefined && { notes: sanitizeText(rest.notes) }),
+      ...(rest.feedback !== undefined && { feedback: sanitizeText(rest.feedback) }),
+      ...(rest.contractType !== undefined && { contractType: sanitizeText(rest.contractType) }),
+      ...(rest.tags !== undefined && { tags: rest.tags.map(sanitizeText) }),
       ...(interviewAt !== undefined && { interviewAt: new Date(interviewAt) }),
       ...(replyBy !== undefined && { replyBy: new Date(replyBy) }),
       ...(offerExpiresAt !== undefined && { offerExpiresAt: new Date(offerExpiresAt) }),
