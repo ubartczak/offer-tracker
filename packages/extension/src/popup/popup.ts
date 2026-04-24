@@ -4,6 +4,8 @@ import type { JobData, SaveApplicationPayload } from "../types";
 
 const JOB_PORTALS = ["linkedin.com", "justjoin.it", "pracuj.pl"];
 
+let cachedJobData: Partial<JobData> = {};
+
 function show(id: string) {
   document.querySelectorAll<HTMLElement>(".view").forEach((el) => el.classList.add("hidden"));
   document.getElementById(id)!.classList.remove("hidden");
@@ -37,11 +39,17 @@ async function scrapeJob(tab: chrome.tabs.Tab): Promise<JobData | null> {
 }
 
 function fillForm(job: JobData) {
+  cachedJobData = job;
+
   (document.getElementById("f-title") as HTMLInputElement).value = job.title;
   (document.getElementById("f-company") as HTMLInputElement).value = job.company;
   (document.getElementById("f-location") as HTMLInputElement).value = job.location ?? "";
-  (document.getElementById("f-salary") as HTMLInputElement).value = job.salary ?? "";
   (document.getElementById("f-url") as HTMLInputElement).value = job.url;
+
+  const salaryDisplay = job.salaryMin != null
+    ? `${job.salaryMin}${job.salaryMax && job.salaryMax !== job.salaryMin ? `–${job.salaryMax}` : ""} ${job.currency ?? "PLN"}${job.salaryType === "HOURLY" ? "/h" : "/mies."}`
+    : "";
+  (document.getElementById("f-salary") as HTMLInputElement).value = salaryDisplay;
 
   const badge = document.getElementById("portal-badge")!;
   badge.textContent = job.portal;
@@ -114,11 +122,15 @@ document.getElementById("save-form")!.addEventListener("submit", async (e) => {
     title: (document.getElementById("f-title") as HTMLInputElement).value,
     company: (document.getElementById("f-company") as HTMLInputElement).value,
     location: (document.getElementById("f-location") as HTMLInputElement).value || undefined,
-    salary: (document.getElementById("f-salary") as HTMLInputElement).value || undefined,
     url: (document.getElementById("f-url") as HTMLInputElement).value,
     portal: ((document.getElementById("portal-badge")! as HTMLElement).dataset.portal ?? "OTHER") as SaveApplicationPayload["portal"],
     status,
     notes: (document.getElementById("f-notes") as HTMLTextAreaElement).value || undefined,
+    salaryMin: cachedJobData.salaryMin,
+    salaryMax: cachedJobData.salaryMax,
+    currency: cachedJobData.currency,
+    salaryType: cachedJobData.salaryType,
+    contractType: cachedJobData.contractType,
   };
 
   const result = await new Promise<{ ok: boolean; error?: string }>((r) =>

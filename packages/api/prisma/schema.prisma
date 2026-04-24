@@ -38,13 +38,28 @@ model JobApplication {
   portal    Portal
   status    ApplicationStatus @default(APPLIED)
 
-  salary    String?
-  notes     String?
-  tags      String[]
+  salaryMin      Int?
+  salaryMax      Int?
+  currency       String?        @default("PLN")
+  salaryType     SalaryType     @default(MONTHLY)
+
+  interviewAt    DateTime?
+  replyBy        DateTime?
+  offerExpiresAt DateTime?
+
+  notes          String?
+  feedback       String?
+  contractType   String?
+  tags           String[]
 
   appliedAt DateTime          @default(now())
   createdAt DateTime          @default(now())
   updatedAt DateTime          @updatedAt
+}
+
+enum SalaryType {
+  MONTHLY
+  HOURLY
 }
 
 enum Portal {

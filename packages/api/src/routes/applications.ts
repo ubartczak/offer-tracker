@@ -4,6 +4,8 @@ import { prisma } from "../lib/prisma";
 import { AuthRequest } from "../middleware/authenticate";
 import { ApplicationStatus, Portal } from "@prisma/client";
 
+const salaryTypeEnum = z.enum(["HOURLY", "WEEKLY", "MONTHLY", "YEARLY", "OTHER"]);
+
 export const applicationsRouter = Router();
 
 const createSchema = z.object({
@@ -13,16 +15,32 @@ const createSchema = z.object({
   url: z.string().url("Nieprawidłowy URL"),
   portal: z.nativeEnum(Portal).default("OTHER"),
   status: z.nativeEnum(ApplicationStatus).default("APPLIED"),
-  salary: z.string().optional(),
+  salaryMin: z.number().int().optional(),
+  salaryMax: z.number().int().optional(),
+  currency: z.enum(["PLN", "USD", "EUR", "OTHER"]).optional(),
+  salaryType: salaryTypeEnum.default("MONTHLY"),
+  interviewAt: z.string().datetime().optional(),
+  replyBy: z.string().datetime().optional(),
+  offerExpiresAt: z.string().datetime().optional(),
   notes: z.string().optional(),
+  feedback: z.string().optional(),
+  contractType: z.string().max(50).optional(),
   tags: z.array(z.string()).default([]),
   appliedAt: z.string().datetime().optional(),
 });
 
 const updateSchema = z.object({
   status: z.nativeEnum(ApplicationStatus).optional(),
+  salaryMin: z.number().int().optional(),
+  salaryMax: z.number().int().optional(),
+  currency: z.enum(["PLN", "USD", "EUR", "OTHER"]).optional(),
+  salaryType: salaryTypeEnum.optional(),
+  interviewAt: z.string().datetime().optional(),
+  replyBy: z.string().datetime().optional(),
+  offerExpiresAt: z.string().datetime().optional(),
   notes: z.string().optional(),
-  salary: z.string().optional(),
+  feedback: z.string().optional(),
+  contractType: z.string().max(50).optional(),
   tags: z.array(z.string()).optional(),
 });
 
@@ -120,13 +138,15 @@ applicationsRouter.post("/", async (req: AuthRequest, res) => {
     return;
   }
 
+  const { appliedAt, interviewAt, replyBy, offerExpiresAt, ...rest } = parsed.data;
   const application = await prisma.jobApplication.create({
     data: {
-      ...parsed.data,
+      ...rest,
       userId: req.user!.userId,
-      appliedAt: parsed.data.appliedAt
-        ? new Date(parsed.data.appliedAt)
-        : new Date(),
+      appliedAt: appliedAt ? new Date(appliedAt) : new Date(),
+      ...(interviewAt && { interviewAt: new Date(interviewAt) }),
+      ...(replyBy && { replyBy: new Date(replyBy) }),
+      ...(offerExpiresAt && { offerExpiresAt: new Date(offerExpiresAt) }),
     },
   });
 
@@ -150,9 +170,15 @@ applicationsRouter.patch("/:id", async (req: AuthRequest, res) => {
     return;
   }
 
+  const { interviewAt, replyBy, offerExpiresAt, ...rest } = parsed.data;
   const updated = await prisma.jobApplication.update({
     where: { id: req.params.id },
-    data: parsed.data,
+    data: {
+      ...rest,
+      ...(interviewAt !== undefined && { interviewAt: new Date(interviewAt) }),
+      ...(replyBy !== undefined && { replyBy: new Date(replyBy) }),
+      ...(offerExpiresAt !== undefined && { offerExpiresAt: new Date(offerExpiresAt) }),
+    },
   });
 
   res.json(updated);
