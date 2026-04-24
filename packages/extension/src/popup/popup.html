@@ -31,15 +31,11 @@
         <input type="text" id="f-location" placeholder="Lokalizacja" />
         <input type="text" id="f-salary" placeholder="Widełki" />
         <input type="url" id="f-url" placeholder="URL oferty" required />
-        <select id="f-status">
-          <option value="APPLIED">Aplikowano</option>
-          <option value="INTERVIEW">Rozmowa</option>
-          <option value="OFFER">Oferta</option>
-          <option value="REJECTED">Odrzucono</option>
-          <option value="IGNORED">Ignoruj</option>
-        </select>
         <textarea id="f-notes" placeholder="Notatki (opcjonalnie)" rows="2"></textarea>
-        <button type="submit" id="btn-save">Zapisz aplikację</button>
+        <div class="save-buttons">
+          <button type="submit" id="btn-applied">Zaaplikowano</button>
+          <button type="submit" id="btn-save-later">Zapisz na później</button>
+        </div>
         <p id="save-error" class="error hidden"></p>
         <p id="save-success" class="success hidden">Zapisano!</p>
       </form>

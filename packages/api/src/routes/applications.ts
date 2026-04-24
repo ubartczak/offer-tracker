@@ -12,6 +12,7 @@ const createSchema = z.object({
   location: z.string().optional(),
   url: z.string().url("Nieprawidłowy URL"),
   portal: z.nativeEnum(Portal).default("OTHER"),
+  status: z.nativeEnum(ApplicationStatus).default("APPLIED"),
   salary: z.string().optional(),
   notes: z.string().optional(),
   tags: z.array(z.string()).default([]),
@@ -36,17 +37,18 @@ const listQuerySchema = z.object({
 // GET /applications/stats  — must be before /:id to avoid route shadowing
 applicationsRouter.get("/stats", async (req: AuthRequest, res) => {
   const userId = req.user!.userId;
+  const statsWhere = { userId, status: { not: "SAVED" as ApplicationStatus } };
 
   const [total, byStatus, byPortal] = await Promise.all([
-    prisma.jobApplication.count({ where: { userId } }),
+    prisma.jobApplication.count({ where: statsWhere }),
     prisma.jobApplication.groupBy({
       by: ["status"],
-      where: { userId },
+      where: statsWhere,
       _count: true,
     }),
     prisma.jobApplication.groupBy({
       by: ["portal"],
-      where: { userId },
+      where: statsWhere,
       _count: true,
     }),
   ]);
@@ -84,7 +86,7 @@ applicationsRouter.get("/", async (req: AuthRequest, res) => {
 
   const where = {
     userId,
-    ...(status && { status }),
+    ...(status ? { status } : { status: { not: "SAVED" as ApplicationStatus } }),
     ...(portal && { portal }),
     ...(search && {
       OR: [

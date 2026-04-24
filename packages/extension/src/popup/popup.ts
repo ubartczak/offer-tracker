@@ -1,3 +1,5 @@
+/// <reference types="chrome"/>
+
 import type { JobData, SaveApplicationPayload } from "../types";
 
 const JOB_PORTALS = ["linkedin.com", "justjoin.it", "pracuj.pl"];
@@ -99,8 +101,14 @@ document.getElementById("save-form")!.addEventListener("submit", async (e) => {
   e.preventDefault();
   clearMessages();
 
-  const btn = document.getElementById("btn-save") as HTMLButtonElement;
-  btn.disabled = true;
+  const submitter = (e as SubmitEvent).submitter as HTMLButtonElement | null;
+  const status: SaveApplicationPayload["status"] =
+    submitter?.id === "btn-save-later" ? "SAVED" : "APPLIED";
+
+  const btnApplied = document.getElementById("btn-applied") as HTMLButtonElement;
+  const btnSaveLater = document.getElementById("btn-save-later") as HTMLButtonElement;
+  btnApplied.disabled = true;
+  btnSaveLater.disabled = true;
 
   const payload: SaveApplicationPayload = {
     title: (document.getElementById("f-title") as HTMLInputElement).value,
@@ -109,7 +117,7 @@ document.getElementById("save-form")!.addEventListener("submit", async (e) => {
     salary: (document.getElementById("f-salary") as HTMLInputElement).value || undefined,
     url: (document.getElementById("f-url") as HTMLInputElement).value,
     portal: ((document.getElementById("portal-badge")! as HTMLElement).dataset.portal ?? "OTHER") as SaveApplicationPayload["portal"],
-    status: (document.getElementById("f-status") as HTMLSelectElement).value as SaveApplicationPayload["status"],
+    status,
     notes: (document.getElementById("f-notes") as HTMLTextAreaElement).value || undefined,
   };
 
@@ -117,7 +125,8 @@ document.getElementById("save-form")!.addEventListener("submit", async (e) => {
     chrome.runtime.sendMessage({ type: "SAVE_APPLICATION", payload }, r)
   );
 
-  btn.disabled = false;
+  btnApplied.disabled = false;
+  btnSaveLater.disabled = false;
 
   if (result.ok) {
     document.getElementById("save-success")!.classList.remove("hidden");

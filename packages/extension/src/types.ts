@@ -1,6 +1,7 @@
 export type Portal = "LINKEDIN" | "JUSTJOIN" | "PRACUJ" | "OTHER";
 
 export type ApplicationStatus =
+  | "SAVED"
   | "APPLIED"
   | "INTERVIEW"
   | "OFFER"

@@ -55,6 +55,7 @@ enum Portal {
 }
 
 enum ApplicationStatus {
+  SAVED
   APPLIED
   INTERVIEW
   OFFER
