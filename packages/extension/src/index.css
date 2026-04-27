@@ -1,0 +1,475 @@
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500&family=DM+Mono:wght@400;500&display=swap");
+
+/* ============================================
+   TOKENS
+   ============================================ */
+
+:root {
+  /* Jam — CTA only */
+  --jam-black: #2a0a0e;
+  --jam-burgundy: #6b1523;
+
+  /* Persimmon — Terracotta & Cream */
+  --brick-deep: #7a2e1a;
+  --brick: #a0412a;
+  --terracotta: #c47055;
+  --blush: #e8b49a;
+  --pale-blush: #f5e6df;
+
+  /* Blueberry — Toile & Navy */
+  --toile-navy: #1e3358;
+  --toile-indigo: #2d5180;
+  --toile-blue: #4a7baf;
+  --toile-mist: #8aaed0;
+
+  /* Neutral — Wood & Linen */
+  --espresso: #2b1a12;
+  --walnut: #5a3e32;
+  --linen: #ede6d9;
+  --cream: #f8f2ee;
+
+  /* Typography */
+  --font-sans: "Plus Jakarta Sans", sans-serif;
+  --font-mono: "DM Mono", monospace;
+
+  /* Radius */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-pill: 20px;
+}
+
+/* ============================================
+   THEME: PERSIMMON (domyślny)
+   Terracotta & Cream — ciepły, ziemisty
+   ============================================ */
+
+body,
+.theme-persimmon {
+  --color-bg: var(--cream);
+  --color-bg-input: var(--pale-blush);
+  --color-bg-input-note: rgba(245, 230, 223, 0.6);
+  --color-lid: var(--brick-deep);
+  --color-lid-border: rgba(122, 46, 26, 0.2);
+  --color-text-primary: var(--espresso);
+  --color-text-muted: var(--walnut);
+  --color-text-mono: var(--brick);
+  --color-cta-bg: var(--jam-burgundy);
+  --color-cta-text: var(--cream);
+  --color-cta-ghost-border: rgba(42, 31, 26, 0.3);
+  --color-link: var(--brick);
+  --color-stat-primary: var(--brick-deep);
+  --color-stat-default: var(--linen);
+}
+
+/* Logo na ciemnym lid */
+.theme-persimmon .popup-lid__logo,
+body:not(.theme-blueberry) .popup-lid__logo {
+  color: var(--cream);
+}
+
+.theme-persimmon .popup-lid__close,
+body:not(.theme-blueberry) .popup-lid__close {
+  color: var(--cream);
+}
+
+/* ============================================
+   THEME: BLUEBERRY
+   Navy & Cream — chłodny, profesjonalny
+   ============================================ */
+
+.theme-blueberry {
+  --color-bg: var(--cream);
+  --color-bg-input: var(--linen);
+  --color-bg-input-note: var(--linen);
+  --color-lid: var(--toile-navy);
+  --color-lid-border: rgba(30, 51, 88, 0.15);
+  --color-text-primary: var(--toile-navy);
+  --color-text-muted: var(--toile-indigo);
+  --color-text-mono: var(--toile-indigo);
+  --color-cta-bg: var(--jam-burgundy);
+  --color-cta-text: var(--cream);
+  --color-cta-ghost-border: rgba(30, 51, 88, 0.3);
+  --color-link: var(--jam-burgundy);
+  --color-stat-primary: var(--toile-navy);
+  --color-stat-default: var(--linen);
+}
+
+.theme-blueberry .popup-lid__logo {
+  color: var(--linen);
+}
+
+.theme-blueberry .popup-lid__close {
+  color: var(--cream);
+}
+
+/* ============================================
+   RESET
+   ============================================ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ============================================
+   POPUP SHELL
+   Chrome extension popup: 360px szerokości
+   ============================================ */
+
+body {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.5;
+  width: 360px;
+  min-height: 200px;
+  background: var(--color-bg);
+  color: var(--color-text-primary);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* ============================================
+   LID — header (zakrętka)
+   ============================================ */
+
+.popup-lid {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 16px;
+  background: var(--color-lid);
+  border-bottom: 0.5px solid var(--color-lid-border);
+}
+
+.popup-lid__logo {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: var(--cream);
+}
+
+.popup-lid__close {
+  font-size: 16px;
+  line-height: 1;
+  opacity: 0.4;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--cream);
+}
+
+/* ============================================
+   BODY — zawartość
+   ============================================ */
+
+.popup-body {
+  padding: 14px 16px 16px;
+}
+
+/* ============================================
+   EYEBROW — "Wykryto ofertę"
+   ============================================ */
+
+.popup-eyebrow {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--color-text-muted);
+  margin-bottom: 10px;
+  text-transform: lowercase;
+  letter-spacing: 0.03em;
+}
+
+/* ============================================
+   INPUTY
+   ============================================ */
+
+.popup-input {
+  display: block;
+  width: 100%;
+  background: var(--color-bg-input);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 400;
+  padding: 7px 10px;
+  border-radius: var(--radius-sm);
+  border: none;
+  outline: none;
+  margin-bottom: 7px;
+}
+
+.popup-input::placeholder {
+  color: var(--color-text-primary);
+  opacity: 0.45;
+}
+
+.popup-input--title {
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.popup-input-row {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 7px;
+}
+
+.popup-input-row .popup-input {
+  margin-bottom: 0;
+  flex: 1;
+}
+
+.popup-input--url {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--color-text-mono);
+}
+
+.popup-input--note {
+  background: var(--color-bg-input-note);
+  min-height: 52px;
+  resize: none;
+  font-size: 12px;
+  margin-bottom: 14px;
+}
+
+/* ============================================
+   PRZYCISKI
+   ============================================ */
+
+.popup-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.popup-btn {
+  flex: 1;
+  padding: 9px 0;
+  border-radius: var(--radius-md);
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  text-align: center;
+  transition: opacity 0.15s ease;
+}
+
+.popup-btn:hover {
+  opacity: 0.85;
+}
+
+/* CTA — Jam Burgundy*/
+.popup-btn--primary {
+  background: var(--jam-burgundy);
+  color: var(--cream);
+  width: 100%;
+  border: none;
+}
+
+/* Ghost Persimmon  */
+.popup-btn--ghost-persimmon {
+  background: transparent;
+  color: var(--brick);
+  border: 1px solid var(--brick);
+}
+
+/* Ghost Blueberry */
+.popup-btn--ghost-blueberry {
+  background: transparent;
+  color: var(--toile-navy);
+  border: 1px solid var(--toile-indigo);
+}
+
+.popup-btn--ghost-cream {
+  background: transparent;
+  color: var(--cream);
+  border: 1px solid rgba(248, 242, 238, 0.45);
+}
+
+/* Destructive */
+.popup-btn--destructive {
+  background: transparent;
+  color: var(--jam-burgundy);
+  border: 1px solid var(--jam-burgundy);
+}
+
+/* Secondary */
+.popup-btn--secondary {
+  background: var(--linen);
+  color: var(--espresso);
+  border: none;
+}
+
+/* ============================================
+   FOOTER LINK — "Dashboard »"
+   ============================================ */
+
+.popup-footer {
+  padding: 8px 16px 10px;
+  text-align: left;
+}
+
+.popup-footer__link {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--color-link);
+  text-decoration: none;
+  opacity: 0.75;
+  letter-spacing: 0.01em;
+}
+
+.popup-footer__link:hover {
+  opacity: 1;
+}
+
+/* ============================================
+   EKRAN SUKCESU — /applied
+   ============================================ */
+
+.popup-success {
+  text-align: center;
+  padding: 20px 16px 16px;
+}
+
+.popup-success__icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid var(--color-text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 12px;
+  opacity: 0.75;
+}
+
+.popup-success__title {
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  margin-bottom: 4px;
+}
+
+.popup-success__sub {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  margin-bottom: 16px;
+}
+
+.popup-summary {
+  background: var(--color-bg-input);
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+  text-align: left;
+}
+
+.popup-summary__title {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  margin-bottom: 4px;
+}
+
+.popup-summary__meta {
+  font-size: 11px;
+  color: var(--color-text-muted);
+  display: flex;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+/* ============================================
+   EKRAN NOT FOUND — /notFound
+   ============================================ */
+
+.popup-notfound {
+  padding: 14px 16px 16px;
+}
+
+.popup-notfound__label {
+  font-size: 11px;
+  color: var(--color-text-muted);
+  margin-bottom: 12px;
+}
+
+.popup-portal-btn {
+  display: block;
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  background: var(--color-bg-input);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  margin-bottom: 8px;
+  transition: opacity 0.15s ease;
+}
+
+.popup-portal-btn:last-child {
+  margin-bottom: 0;
+}
+
+.popup-portal-btn:hover {
+  opacity: 0.8;
+}
+
+/* ============================================
+   BADGE STATUSÓW
+   ============================================ */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.badge::before {
+  content: "";
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.6;
+}
+
+.badge--applied {
+  background: var(--pale-blush);
+  color: var(--brick);
+}
+
+.badge--interview {
+  background: #c8d98a;
+  color: #3a4a10;
+}
+
+.badge--offer {
+  background: #f0dfa0;
+  color: var(--espresso);
+}
+
+.badge--rejected {
+  background: var(--jam-burgundy);
+  color: var(--cream);
+}
+
+.badge--ghost {
+  background: var(--linen);
+  color: var(--walnut);
+}
