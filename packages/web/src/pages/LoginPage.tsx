@@ -3,6 +3,8 @@ import { useNavigate, Link } from "react-router-dom";
 import { api } from "../lib/api";
 import { saveTokens } from "../lib/auth";
 import { AuthResponse } from "../types/api";
+import Button from "../components/ui/Button";
+import Input from "../components/ui/Input";
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -28,38 +30,63 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="w-full max-w-sm bg-white rounded-xl shadow p-8">
-        <h1 className="text-2xl font-bold text-gray-900 mb-6">Logowanie</h1>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-            <input
-              type="email" required value={email}
+    <div style={{ minHeight: "100vh", background: "var(--cream)", fontFamily: "var(--font-sans)" }}>
+      <nav style={{ background: "var(--brick)", padding: "14px 24px" }}>
+        <span style={{ color: "var(--cream)", fontWeight: 500, fontSize: 15 }}>
+          Job Assistant Manager
+        </span>
+      </nav>
+
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "calc(100vh - 50px)" }}>
+        <div style={{
+          width: 360,
+          background: "var(--linen)",
+          borderRadius: 12,
+          padding: "28px 24px 20px",
+        }}>
+          <p style={{ fontSize: 22, fontWeight: 500, color: "var(--espresso)", marginBottom: 2 }}>
+            Zaloguj się
+          </p>
+          <p style={{ fontSize: 12, fontFamily: "var(--font-mono)", color: "var(--walnut)", marginBottom: 20 }}>
+            odkręć słoik
+          </p>
+
+          <form onSubmit={handleSubmit}>
+            <Input
+              label="email"
+              id="email"
+              type="email"
+              required
+              value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Hasło</label>
-            <input
-              type="password" required value={password}
+            <Input
+              label="hasło"
+              id="password"
+              type="password"
+              required
+              value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
+
+            {error && (
+              <p style={{ fontSize: 12, color: "var(--jam-burgundy)", marginBottom: 10 }}>{error}</p>
+            )}
+
+            <Button type="submit" loading={loading} style={{ width: "100%", marginTop: "20px" }}>
+              Zaloguj się
+            </Button>
+          </form>
+
+          <div style={{ marginTop: 14 }}>
+            <Link
+              to="/register"
+              style={{ fontSize: 11, fontFamily: "var(--font-mono)", color: "var(--brick)", textDecoration: "none", opacity: 0.8 }}
+            >
+              nie mam konta → zarejestruj się
+            </Link>
           </div>
-          {error && <p className="text-sm text-red-600">{error}</p>}
-          <button
-            type="submit" disabled={loading}
-            className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-medium py-2 rounded-lg text-sm"
-          >
-            {loading ? "Logowanie…" : "Zaloguj się"}
-          </button>
-        </form>
-        <p className="mt-4 text-sm text-center text-gray-500">
-          Nie masz konta?{" "}
-          <Link to="/register" className="text-blue-600 hover:underline">Zarejestruj się</Link>
-        </p>
+        </div>
       </div>
     </div>
   );

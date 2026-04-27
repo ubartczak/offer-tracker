@@ -1,3 +1,738 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500&family=DM+Mono:wght@400;500&display=swap");
+
+/* ============================================
+   TOKENS
+   ============================================ */
+
+:root {
+  /* Jam — CTA only */
+  --jam-black: #2a0a0e;
+  --jam-burgundy: #6b1523;
+
+  /* Persimmon — Terracotta & Cream */
+  --brick-deep: #7a2e1a;
+  --brick: #a0412a;
+  --terracotta: #c47055;
+  --blush: #e8b49a;
+  --pale-blush: #f5e6df;
+
+  /* Blueberry — Toile & Navy */
+  --toile-navy: #1e3358;
+  --toile-indigo: #2d5180;
+  --toile-blue: #4a7baf;
+  --toile-mist: #8aaed0;
+
+  /* Neutral — Wood & Linen */
+  --espresso: #2b1a12;
+  --walnut: #5a3e32;
+  --linen: #ede6d9;
+  --cream: #f8f2ee;
+
+  /* Typography */
+  --font-sans: "Plus Jakarta Sans", sans-serif;
+  --font-mono: "DM Mono", monospace;
+
+  /* Radius */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-pill: 20px;
+}
+
+/* ============================================
+   THEME: PERSIMMON (domyślny)
+   Terracotta & Cream — ciepły, ziemisty
+   ============================================ */
+
+body,
+.theme-persimmon {
+  --color-bg: var(--cream);
+  --color-field-bg: var(--blush);
+  --color-field-text: var(--espresso);
+  --color-field-label: var(--espresso);
+  --color-field-focus: var(--pale-blush);
+  --color-field-selected: var(--brick-deep);
+  --color-bg-surface: var(--pale-blush);
+  --color-bg-input: rgba(245, 230, 223, 0.7);
+  --color-header: var(--brick-deep);
+  --color-header-border: rgba(122, 46, 26, 0.2);
+  --color-text-primary: var(--espresso);
+  --color-text-muted: var(--walnut);
+  --color-text-mono: var(--brick);
+  --color-cta-bg: var(--jam-burgundy);
+  --color-cta-text: var(--cream);
+  --color-accent: var(--brick);
+  --color-accent-deep: var(--brick-deep);
+  --color-link: var(--brick);
+  --color-ghost-border: rgba(160, 65, 42, 0.4);
+  --color-border: rgba(42, 31, 26, 0.1);
+  --color-border-strong: rgba(42, 31, 26, 0.2);
+  --color-stat-active: var(--brick-deep);
+  --color-stat-default: var(--linen);
+  --color-row-hover: var(--pale-blush);
+  --color-table-header: var(--brick-deep);
+  --color-table-header-text: var(--cream);
+}
+
+/* ============================================
+   THEME: BLUEBERRY
+   Navy & Cream — chłodny, profesjonalny
+   ============================================ */
+
+.theme-blueberry {
+  --color-bg: var(--cream);
+  --color-field-bg: var(--linen);
+  --color-field-text: var(--toile-navy);
+  --color-field-label: var(--toile-navy);
+  --color-field-focus: var(--cream);
+  --color-field-selected: var(--toile-navy);
+  --color-bg-surface: var(--linen);
+  --color-bg-input: var(--linen);
+  --color-header: var(--toile-navy);
+  --color-header-border: rgba(30, 51, 88, 0.15);
+  --color-text-primary: var(--espresso);
+  --color-text-muted: var(--walnut);
+  --color-text-mono: var(--toile-indigo);
+  --color-cta-bg: var(--jam-burgundy);
+  --color-cta-text: var(--cream);
+  --color-accent: var(--toile-navy);
+  --color-accent-deep: var(--toile-indigo);
+  --color-link: var(--jam-burgundy);
+  --color-ghost-border: rgba(30, 51, 88, 0.35);
+  --color-border: rgba(30, 51, 88, 0.1);
+  --color-border-strong: rgba(30, 51, 88, 0.2);
+  --color-stat-active: var(--toile-navy);
+  --color-stat-default: var(--linen);
+  --color-row-hover: var(--linen);
+  --color-table-header: var(--toile-navy);
+  --color-table-header-text: var(--cream);
+}
+
+/* ============================================
+   RESET
+   ============================================ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ============================================
+   BASE
+   ============================================ */
+
+body {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.5;
+  background: var(--color-bg);
+  color: var(--color-text-primary);
+  min-height: 100vh;
+}
+
+a {
+  color: var(--color-link);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* ============================================
+   HEADER / NAV
+   ============================================ */
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 28px;
+  height: 52px;
+  background: var(--color-header);
+  border-bottom: 0.5px solid var(--color-header-border);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.header__logo {
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--cream);
+  letter-spacing: 0.03em;
+}
+
+.header__right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.header__email {
+  font-size: 12px;
+  color: rgba(248, 242, 238, 0.5);
+}
+
+/* ============================================
+   LAYOUT
+   ============================================ */
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 28px;
+}
+
+.main {
+  padding: 28px 0;
+}
+
+/* ============================================
+   STAT CARDS
+   ============================================ */
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  background: white;
+  border: 0.5px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 14px 16px;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.stat-card:hover {
+  opacity: 0.85;
+}
+
+.stat-card--active {
+  background: var(--color-stat-active);
+  border-color: var(--color-stat-active);
+}
+
+.stat-card__label {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 6px;
+}
+
+.stat-card--active .stat-card__label {
+  color: rgba(248, 242, 238, 0.65);
+}
+
+.stat-card__value {
+  font-size: 28px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  line-height: 1;
+}
+
+.stat-card--active .stat-card__value {
+  color: var(--cream);
+}
+
+/* ============================================
+   FILTRY
+   ============================================ */
+
+.filters {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+  align-items: center;
+}
+
+.search-wrap {
+  position: relative;
+  flex: 1;
+}
+
+.search-wrap__icon {
+  position: absolute;
+  left: 11px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-text-muted);
+  font-size: 14px;
+  pointer-events: none;
+}
+
+.input {
+  display: block;
+  width: 100%;
+  height: 36px;
+  background: white;
+  border: 0.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 0 12px;
+  font-size: 13px;
+  font-family: var(--font-sans);
+  color: var(--color-text-primary);
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.input:focus {
+  border-color: var(--color-border-strong);
+}
+
+.input--search {
+  padding-left: 34px;
+}
+
+.input::placeholder {
+  color: var(--color-text-muted);
+  opacity: 0.6;
+}
+
+.select {
+  height: 36px;
+  background: white;
+  border: 0.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 0 28px 0 12px;
+  font-size: 13px;
+  font-family: var(--font-sans);
+  color: var(--color-text-muted);
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%235a3e32' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  cursor: pointer;
+  min-width: 130px;
+  transition: border-color 0.15s ease;
+}
+
+.select:focus {
+  border-color: var(--color-border-strong);
+}
+
+/* ============================================
+   TABELA
+   ============================================ */
+
+.table-wrap {
+  background: white;
+  border: 0.5px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.table thead tr {
+  background: var(--color-table-header);
+}
+
+.table thead th {
+  padding: 11px 16px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--color-table-header-text);
+  opacity: 0.85;
+}
+
+.table thead th:last-child {
+  text-align: right;
+}
+
+.table tbody tr {
+  border-bottom: 0.5px solid var(--color-border);
+  transition: background 0.1s ease;
+}
+
+.table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.table tbody tr:hover {
+  background: var(--color-row-hover);
+}
+
+.table tbody td {
+  padding: 13px 16px;
+  font-size: 13px;
+  color: var(--color-text-primary);
+  vertical-align: middle;
+}
+
+.table__title {
+  font-weight: 500;
+  color: var(--color-link);
+  text-decoration: none;
+  font-size: 13px;
+}
+
+.table__title:hover {
+  text-decoration: underline;
+}
+
+.table__sub {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  margin-top: 2px;
+}
+
+.table__muted {
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.table__mono {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--color-text-mono);
+}
+
+.table__actions {
+  text-align: right;
+}
+
+/* ============================================
+   PAGINACJA
+   ============================================ */
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 0 0;
+}
+
+.pagination__info {
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.pagination__btns {
+  display: flex;
+  gap: 6px;
+}
+
+/* ============================================
+   PRZYCISKI
+   ============================================ */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: var(--radius-md);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  text-align: center;
+  transition: opacity 0.15s ease;
+  white-space: nowrap;
+}
+
+.btn:hover {
+  opacity: 0.85;
+}
+
+.btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+/* CTA — Jam Burgundy, zawsze */
+.btn--primary {
+  background: var(--jam-burgundy);
+  color: var(--cream);
+  border: none;
+}
+
+/* Ghost Persimmon */
+.btn--ghost-persimmon {
+  background: transparent;
+  color: var(--brick);
+  border: 1px solid var(--brick);
+}
+
+/* Ghost Blueberry */
+.btn--ghost-blueberry {
+  background: transparent;
+  color: var(--toile-navy);
+  border: 1px solid var(--toile-indigo);
+}
+
+/* Ghost Cream — na ciemnych headerach */
+.btn--ghost-cream {
+  background: transparent;
+  color: var(--cream);
+  border: 1px solid rgba(248, 242, 238, 0.45);
+}
+
+/* Destructive */
+.btn--destructive {
+  background: transparent;
+  color: var(--jam-burgundy);
+  border: 1px solid var(--jam-burgundy);
+}
+
+/* Secondary */
+.btn--secondary {
+  background: var(--linen);
+  color: var(--espresso);
+  border: none;
+}
+
+/* Rozmiar sm — np. w tabeli, paginacja */
+.btn--sm {
+  padding: 5px 12px;
+  font-size: 12px;
+}
+
+/* Paginacja aktywna strona */
+.btn--page-active {
+  background: var(--color-accent);
+  color: var(--cream);
+  border: none;
+}
+
+/* ============================================
+   BADGE STATUSÓW
+   ============================================ */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.badge::before {
+  content: "";
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.6;
+}
+
+.badge--applied {
+  background: var(--pale-blush);
+  color: var(--brick);
+}
+
+.badge--interview {
+  background: #c8d98a;
+  color: #3a4a10;
+}
+
+.badge--offer {
+  background: #f0dfa0;
+  color: var(--espresso);
+}
+
+.badge--rejected {
+  background: var(--jam-burgundy);
+  color: var(--cream);
+}
+
+.badge--ghost {
+  background: var(--linen);
+  color: var(--walnut);
+}
+
+.badge--linkedin {
+  background: #dce8f5;
+  color: #1a4d80;
+}
+
+.badge--justjoin {
+  background: #e8f0dc;
+  color: #2f5a14;
+}
+
+.badge--pracuj {
+  background: var(--pale-blush);
+  color: var(--brick);
+}
+
+.badge--other {
+  background: var(--linen);
+  color: var(--walnut);
+}
+
+/* ============================================
+   FORMULARZE AUTH (login / rejestracja)
+   ============================================ */
+
+.auth-wrap {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-bg);
+  padding: 24px;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 400px;
+  background: white;
+  border: 0.5px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+}
+
+.auth-card__logo {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--color-accent);
+  letter-spacing: 0.03em;
+  margin-bottom: 24px;
+}
+
+.auth-card__title {
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  margin-bottom: 4px;
+}
+
+.auth-card__sub {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  margin-bottom: 24px;
+}
+
+.field {
+  margin-bottom: 14px;
+}
+
+.field__label {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-text-muted);
+  margin-bottom: 6px;
+  letter-spacing: 0.02em;
+}
+
+.field__error {
+  font-size: 12px;
+  color: var(--jam-burgundy);
+  margin-top: 5px;
+}
+
+.auth-card__footer {
+  margin-top: 16px;
+  font-size: 12px;
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.spin {
+  animation: spin 0.8s linear infinite;
+}
+
+/* ============================================
+   FIELD INPUT (themed)
+   ============================================ */
+
+.field-input__label {
+  display: block;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--color-field-label);
+  margin-bottom: 2px;
+  letter-spacing: 0.02em;
+}
+
+.field-input__input {
+  display: block;
+  width: 100%;
+  background: var(--color-field-bg);
+  color: var(--color-field-text);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 400;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  border: none;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.15s ease;
+}
+
+.field-input__input:focus {
+  box-shadow: inset 0 0 0 2px var(--color-field-focus);
+}
+
+.field-input__input::placeholder {
+  color: var(--color-field-text);
+  opacity: 0.4;
+}
+
+input[type="search"]::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'%3E%3Cpath d='M2 2l10 10M12 2L2 12' stroke='%232b1a12' stroke-width='1.8' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-size: contain;
+  cursor: pointer;
+  opacity: 0.5;
+}
+
+input[type="search"]::-webkit-search-cancel-button:hover {
+  opacity: 1;
+}
+
+.field-input__input:-webkit-autofill,
+.field-input__input:-webkit-autofill:hover,
+.field-input__input:-webkit-autofill:focus,
+.field-input__input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px var(--color-field-bg) inset;
+  -webkit-text-fill-color: var(--color-field-text);
+  transition: background-color 9999s ease-in-out 0s;
+}
+
+.field-input__input:not(:focus) {
+  border-color: transparent;
+  background: var(--color-field-bg);
+  color: var(--color-field-text);
+}

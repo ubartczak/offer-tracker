@@ -3,10 +3,12 @@ import { useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "../lib/api";
 import { clearTokens, getUserEmail } from "../lib/auth";
-import { ApplicationsResponse, StatsResponse, JobApplication, ApplicationStatus, Portal } from "../types/api";
+import { ApplicationsResponse, JobApplication, ApplicationStatus, Portal } from "../types/api";
 import { useColumnConfig } from "../hooks/useColumnConfig";
-import ColumnConfigurator from "../components/ColumnConfigurator";
 import { ColumnId } from "../types/columns";
+import Dropdown from "../components/ui/Dropdown";
+import SearchBar from "../components/ui/SearchBar";
+import { LoaderCircle } from "lucide-react";
 
 const STATUS_LABELS: Record<ApplicationStatus, string> = {
   SAVED: "Zapisana", APPLIED: "Aplikowano", INTERVIEW: "Rozmowa",
@@ -53,13 +55,13 @@ const ALL_PORTALS: Portal[] = ["LINKEDIN", "JUSTJOIN", "PRACUJ", "OTHER"];
 export default function DashboardPage() {
   const navigate = useNavigate();
   const qc = useQueryClient();
-  const { columns, setColumns, resetColumns } = useColumnConfig();
-  const [showConfigurator, setShowConfigurator] = useState(false);
+  const { columns } = useColumnConfig();
 
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<ApplicationStatus | "">("");
   const [portalFilter, setPortalFilter] = useState<Portal | "">("");
+  const [sortOrder, setSortOrder] = useState<"desc" | "asc">("desc");
   const [page, setPage] = useState(1);
 
   const searchTimer = useRef<ReturnType<typeof setTimeout>>();
@@ -73,6 +75,8 @@ export default function DashboardPage() {
     ...(statusFilter && { status: statusFilter }),
     ...(portalFilter && { portal: portalFilter }),
     ...(debouncedSearch && { search: debouncedSearch }),
+    sortBy: "appliedAt",
+    sortOrder,
     page,
     limit: 20,
   };
@@ -82,10 +86,7 @@ export default function DashboardPage() {
     queryFn: () => api.get("/applications", { params }).then((r) => r.data),
   });
 
-  const { data: stats } = useQuery<StatsResponse>({
-    queryKey: ["stats"],
-    queryFn: () => api.get("/applications/stats").then((r) => r.data),
-  });
+
 
   const deleteMut = useMutation({
     mutationFn: (id: string) => api.delete(`/applications/${id}`),
@@ -153,116 +154,102 @@ export default function DashboardPage() {
     }
   }
 
+  const colLabel = (id: ColumnId) =>
+    id === "title" ? "STANOWISKO" : id === "company" ? "FIRMA"
+    : id === "status" ? "STATUS" : id === "portal" ? "PORTAL"
+    : id === "salary" ? "WYNAGRODZENIE" : id === "contractType" ? "TYP UMOWY"
+    : id === "location" ? "LOKALIZACJA" : id === "interviewAt" ? "ROZMOWA"
+    : id === "appliedAt" ? "DATA" : "";
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div style={{ minHeight: "100vh", background: "var(--linen)" }}>
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between">
-        <span className="font-bold text-gray-900 text-lg">Offer Tracker</span>
-        <div className="flex items-center gap-4">
-          <span className="text-sm text-gray-500">{getUserEmail()}</span>
-          <button onClick={handleLogout} className="text-sm text-gray-600 hover:text-gray-900">Wyloguj</button>
+      <header className="header">
+        <span className="header__logo">Job Assistant Manager</span>
+        <div className="header__right">
+          <span className="header__email">{getUserEmail()}</span>
+          <button onClick={handleLogout} className="btn btn--ghost-cream btn--sm">Wyloguj</button>
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-6 py-6 space-y-6">
-        {/* Stats */}
-        {stats && (
-          <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
-            {[
-              { label: "Wszystkie", value: stats.total },
-              { label: "Aplikowano", value: stats.byStatus.APPLIED ?? 0 },
-              { label: "Rozmowa", value: stats.byStatus.INTERVIEW ?? 0 },
-              { label: "Oferta", value: stats.byStatus.OFFER ?? 0 },
-              { label: "Odrzucono", value: stats.byStatus.REJECTED ?? 0 },
-            ].map(({ label, value }) => (
-              <div key={label} className="bg-white rounded-xl border border-gray-200 p-4">
-                <p className="text-xs text-gray-500 mb-1">{label}</p>
-                <p className="text-2xl font-bold text-gray-900">{value}</p>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Filters + columns button */}
-        <div className="flex flex-wrap gap-3 items-center">
-          <input
-            type="search" placeholder="Szukaj po stanowisku lub firmie…"
-            value={search} onChange={(e) => handleSearchChange(e.target.value)}
-            className="border border-gray-300 rounded-lg px-3 py-2 text-sm w-72 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <select
+      <main className="container main">
+        {/* Filters */}
+        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
+          <Dropdown
+            label="Status"
             value={statusFilter}
-            onChange={(e) => { setStatusFilter(e.target.value as ApplicationStatus | ""); setPage(1); }}
-            className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none"
-          >
-            <option value="">Wszystkie statusy</option>
-            {ALL_STATUSES.map((s) => <option key={s} value={s}>{STATUS_LABELS[s]}</option>)}
-          </select>
-          <select
+            options={ALL_STATUSES.map((s) => ({ value: s, label: STATUS_LABELS[s] }))}
+            onChange={(v) => { setStatusFilter(v as ApplicationStatus | ""); setPage(1); }}
+          />
+          <Dropdown
+            label="Portal"
             value={portalFilter}
-            onChange={(e) => { setPortalFilter(e.target.value as Portal | ""); setPage(1); }}
-            className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none"
-          >
-            <option value="">Wszystkie portale</option>
-            {ALL_PORTALS.map((p) => <option key={p} value={p}>{PORTAL_LABELS[p]}</option>)}
-          </select>
-
-          <div className="relative ml-auto">
-            <button
-              onClick={() => setShowConfigurator((v) => !v)}
-              className="border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white hover:bg-gray-50"
-            >
-              Kolumny
-            </button>
-            {showConfigurator && (
-              <ColumnConfigurator
-                columns={columns}
-                setColumns={setColumns}
-                resetColumns={resetColumns}
-                onClose={() => setShowConfigurator(false)}
-              />
-            )}
+            options={ALL_PORTALS.map((p) => ({ value: p, label: PORTAL_LABELS[p] }))}
+            onChange={(v) => { setPortalFilter(v as Portal | ""); setPage(1); }}
+          />
+          <Dropdown
+            label="Sortuj"
+            value={sortOrder}
+            options={[
+              { value: "desc", label: "Najnowsze" },
+              { value: "asc", label: "Najstarsze" },
+            ]}
+            onChange={(v) => { setSortOrder(v as "desc" | "asc"); setPage(1); }}
+          />
+          <div style={{ marginLeft: "auto" }}>
+            <SearchBar
+              placeholder="Szukaj…"
+              value={search}
+              onChange={(e) => handleSearchChange(e.target.value)}
+              style={{ width: 220 }}
+            />
           </div>
         </div>
 
         {/* Table */}
-        <div className="bg-white rounded-xl border border-gray-200 overflow-x-auto">
-          <table className="w-full text-sm">
+        <div style={{ position: "relative", borderRadius: "var(--radius-lg)", overflow: "hidden", border: "0.5px solid var(--color-border)" }}>
+          {isLoading && (
+            <div style={{
+              position: "absolute", inset: 0, zIndex: 10,
+              background: "rgba(248, 242, 238, 0.6)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+            }}>
+              <LoaderCircle size={28} style={{ color: "var(--brick)", animation: "spin 0.8s linear infinite" }} />
+            </div>
+          )}
+          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
             <thead>
-              <tr className="border-b border-gray-200 text-xs text-gray-500 font-medium">
+              <tr style={{ background: "var(--color-table-header)" }}>
                 {visibleColumns.map((col) => (
                   <th
                     key={col.id}
-                    style={{ width: col.width, minWidth: col.width }}
-                    className="text-left px-4 py-3"
+                    style={{
+                      width: col.width, minWidth: col.width,
+                      padding: "10px 16px", textAlign: "left",
+                      fontSize: 11, fontWeight: 500, letterSpacing: "0.06em",
+                      color: "var(--color-table-header-text)",
+                    }}
                   >
-                    {col.id === "title" ? "Stanowisko"
-                      : col.id === "company" ? "Firma"
-                      : col.id === "status" ? "Status"
-                      : col.id === "portal" ? "Portal"
-                      : col.id === "salary" ? "Wynagrodzenie"
-                      : col.id === "contractType" ? "Typ umowy"
-                      : col.id === "location" ? "Lokalizacja"
-                      : col.id === "interviewAt" ? "Rozmowa"
-                      : col.id === "appliedAt" ? "Data aplikacji"
-                      : ""}
+                    {colLabel(col.id)}
                   </th>
                 ))}
               </tr>
             </thead>
             <tbody>
-              {isLoading ? (
-                <tr><td colSpan={visibleColumns.length} className="text-center py-12 text-gray-400">Ładowanie…</td></tr>
-              ) : data?.applications.length === 0 ? (
-                <tr><td colSpan={visibleColumns.length} className="text-center py-12 text-gray-400">Brak wyników</td></tr>
+              {data?.applications.length === 0 ? (
+                <tr><td colSpan={visibleColumns.length} style={{ textAlign: "center", padding: "48px 0", color: "var(--color-text-muted)", background: "var(--blush)" }}>Brak wyników</td></tr>
               ) : (
                 data?.applications.map((app) => (
-                  <tr key={app.id} className="border-b border-gray-100 hover:bg-gray-50">
+                  <tr
+                    key={app.id}
+                    style={{ borderBottom: "0.5px solid var(--color-border)", background: "var(--blush)" }}
+                    onMouseEnter={(e) => (e.currentTarget.style.background = "var(--pale-blush)")}
+                    onMouseLeave={(e) => (e.currentTarget.style.background = "var(--blush)")}
+                  >
                     {visibleColumns.map((col) => (
                       <td
                         key={col.id}
-                        style={{ width: col.width, minWidth: col.width, maxWidth: col.width }}
-                        className="px-4 py-3 overflow-hidden"
+                        style={{ width: col.width, minWidth: col.width, maxWidth: col.width, padding: "10px 16px", overflow: "hidden" }}
                       >
                         {renderCell(col.id, app)}
                       </td>
@@ -276,25 +263,11 @@ export default function DashboardPage() {
 
         {/* Pagination */}
         {pagination && pagination.pages > 1 && (
-          <div className="flex items-center justify-between text-sm text-gray-600">
-            <span>
-              Wyniki {(page - 1) * 20 + 1}–{Math.min(page * 20, pagination.total)} z {pagination.total}
-            </span>
-            <div className="flex gap-2">
-              <button
-                disabled={page === 1}
-                onClick={() => setPage((p) => p - 1)}
-                className="px-3 py-1 border border-gray-300 rounded-lg disabled:opacity-40 hover:bg-gray-50"
-              >
-                Poprzednia
-              </button>
-              <button
-                disabled={page >= pagination.pages}
-                onClick={() => setPage((p) => p + 1)}
-                className="px-3 py-1 border border-gray-300 rounded-lg disabled:opacity-40 hover:bg-gray-50"
-              >
-                Następna
-              </button>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 16, fontSize: 13, color: "var(--color-text-muted)" }}>
+            <span>Wyniki {(page - 1) * 20 + 1}–{Math.min(page * 20, pagination.total)} z {pagination.total}</span>
+            <div style={{ display: "flex", gap: 8 }}>
+              <button disabled={page === 1} onClick={() => setPage((p) => p - 1)} className="btn btn--ghost btn--sm">Poprzednia</button>
+              <button disabled={page >= pagination.pages} onClick={() => setPage((p) => p + 1)} className="btn btn--ghost btn--sm">Następna</button>
             </div>
           </div>
         )}
