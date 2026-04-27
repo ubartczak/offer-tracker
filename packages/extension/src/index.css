@@ -61,6 +61,15 @@ body,
   --color-link: var(--brick);
   --color-stat-primary: var(--brick-deep);
   --color-stat-default: var(--linen);
+  /* popup-specific */
+  --color-popup-bg: var(--linen);
+  --color-popup-input-bg: var(--blush);
+  --color-popup-input-text: var(--espresso);
+  --color-popup-card-bg: var(--blush);
+  --color-popup-ghost: var(--brick);
+  --color-popup-ghost-border: var(--brick);
+  --color-popup-portal-link: var(--brick);
+  --color-popup-portal-border: var(--brick);
 }
 
 /* Logo na ciemnym lid */
@@ -94,6 +103,15 @@ body:not(.theme-blueberry) .popup-lid__close {
   --color-link: var(--jam-burgundy);
   --color-stat-primary: var(--toile-navy);
   --color-stat-default: var(--linen);
+  /* popup-specific */
+  --color-popup-bg: var(--cream);
+  --color-popup-input-bg: var(--linen);
+  --color-popup-input-text: var(--toile-navy);
+  --color-popup-card-bg: var(--linen);
+  --color-popup-ghost: var(--toile-navy);
+  --color-popup-ghost-border: var(--toile-indigo);
+  --color-popup-portal-link: var(--toile-navy);
+  --color-popup-portal-border: var(--toile-indigo);
 }
 
 .theme-blueberry .popup-lid__logo {
@@ -198,6 +216,11 @@ body {
 
 .popup-body {
   padding: 14px 16px 16px;
+  background: var(--color-popup-bg);
+}
+
+.popup-footer {
+  background: var(--color-popup-bg);
 }
 
 /* ============================================
@@ -301,8 +324,8 @@ textarea.field-input__input.popup-field--note {
 .field-input__input {
   display: block;
   width: 100%;
-  background: var(--blush);
-  color: var(--color-text-primary);
+  background: var(--color-popup-input-bg);
+  color: var(--color-popup-input-text);
   font-family: var(--font-sans);
   font-size: 13px;
   font-weight: 400;
@@ -310,8 +333,8 @@ textarea.field-input__input.popup-field--note {
   border-radius: var(--radius-sm);
   border: none;
   outline: none;
-  -webkit-box-shadow: inset 0 0 0 1000px var(--blush);
-  box-shadow: inset 0 0 0 1000px var(--blush);
+  -webkit-box-shadow: inset 0 0 0 1000px var(--color-popup-input-bg);
+  box-shadow: inset 0 0 0 1000px var(--color-popup-input-bg);
   transition: background-color 9999s;
 }
 
@@ -435,12 +458,12 @@ textarea.field-input__input {
   border: none;
 }
 
-/* Ghost Persimmon (default) */
+/* Ghost (theme-aware) */
 .popup-btn--ghost,
 .popup-btn--ghost-persimmon {
   background: transparent;
-  color: var(--brick);
-  border: 1px solid var(--brick);
+  color: var(--color-popup-ghost);
+  border: 1px solid var(--color-popup-ghost-border);
 }
 
 /* Ghost Blueberry */
@@ -553,7 +576,7 @@ textarea.field-input__input {
    ============================================ */
 
 .popup-portal-card {
-  background: var(--blush);
+  background: var(--color-popup-card-bg);
   border-radius: var(--radius-lg);
   padding: 24px 24px;
   margin-bottom: 4px;
@@ -565,11 +588,11 @@ textarea.field-input__input {
   padding: 9px 14px;
   border-radius: var(--radius-md);
   background: transparent;
-  color: var(--brick);
+  color: var(--color-popup-portal-link);
   font-family: var(--font-sans);
   font-size: 13px;
   font-weight: 500;
-  border: 1px solid var(--brick);
+  border: 1px solid var(--color-popup-portal-border);
   cursor: pointer;
   text-align: center;
   text-decoration: none;

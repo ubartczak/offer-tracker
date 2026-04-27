@@ -197,4 +197,9 @@ document.getElementById("save-form")!.addEventListener("submit", async (e) => {
   }
 });
 
+// Apply theme from chrome.storage before rendering
+chrome.storage.local.get("jam-theme").then((result) => {
+  document.body.classList.toggle("theme-blueberry", result["jam-theme"] === "blueberry");
+});
+
 init();

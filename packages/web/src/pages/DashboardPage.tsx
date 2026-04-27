@@ -9,6 +9,7 @@ import { ColumnId } from "../types/columns";
 import Dropdown from "../components/ui/Dropdown";
 import SearchBar from "../components/ui/SearchBar";
 import { LoaderCircle } from "lucide-react";
+import { useTheme } from "../contexts/ThemeContext";
 
 const STATUS_LABELS: Record<ApplicationStatus, string> = {
   SAVED: "Zapisana", APPLIED: "Aplikowano", INTERVIEW: "Rozmowa",
@@ -56,6 +57,7 @@ export default function DashboardPage() {
   const navigate = useNavigate();
   const qc = useQueryClient();
   const { columns } = useColumnConfig();
+  const { theme, toggle } = useTheme();
 
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -162,12 +164,19 @@ export default function DashboardPage() {
     : id === "appliedAt" ? "DATA" : "";
 
   return (
-    <div style={{ minHeight: "100vh", background: "var(--linen)" }}>
+    <div style={{ minHeight: "100vh", background: "var(--color-bg)" }}>
       {/* Header */}
       <header className="header">
         <span className="header__logo">Job Assistant Manager</span>
         <div className="header__right">
           <span className="header__email">{getUserEmail()}</span>
+          <button
+            onClick={toggle}
+            title={theme === "persimmon" ? "Przełącz na Blueberry" : "Przełącz na Persimmon"}
+            style={{ background: "none", border: "none", cursor: "pointer", fontSize: 18, lineHeight: 1, padding: "0 4px" }}
+          >
+            {theme === "persimmon" ? "🫐" : "🍅"}
+          </button>
           <button onClick={handleLogout} className="btn btn--ghost-cream btn--sm">Wyloguj</button>
         </div>
       </header>
@@ -237,14 +246,14 @@ export default function DashboardPage() {
             </thead>
             <tbody>
               {data?.applications.length === 0 ? (
-                <tr><td colSpan={visibleColumns.length} style={{ textAlign: "center", padding: "48px 0", color: "var(--color-text-muted)", background: "var(--blush)" }}>Brak wyników</td></tr>
+                <tr><td colSpan={visibleColumns.length} style={{ textAlign: "center", padding: "48px 0", color: "var(--color-text-muted)", background: "var(--color-table-row)" }}>Brak wyników</td></tr>
               ) : (
                 data?.applications.map((app) => (
                   <tr
                     key={app.id}
-                    style={{ borderBottom: "0.5px solid var(--color-border)", background: "var(--blush)" }}
-                    onMouseEnter={(e) => (e.currentTarget.style.background = "var(--pale-blush)")}
-                    onMouseLeave={(e) => (e.currentTarget.style.background = "var(--blush)")}
+                    style={{ borderBottom: "0.5px solid var(--color-border)", background: "var(--color-table-row)" }}
+                    onMouseEnter={(e) => (e.currentTarget.style.background = "var(--color-row-hover)")}
+                    onMouseLeave={(e) => (e.currentTarget.style.background = "var(--color-table-row)")}
                   >
                     {visibleColumns.map((col) => (
                       <td
