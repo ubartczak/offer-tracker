@@ -3,67 +3,96 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>JAM — Logowanie</title>
+    <title>JAM</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500&family=DM+Mono&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500&family=DM+Mono:wght@400;500&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="popup.css" />
   </head>
-  <body class="theme-peach">
+  <body>
     <div id="app">
-      <div id="view-login" class="view">
+
+      <!-- Login -->
+      <div id="view-login" class="view hidden">
         <div class="popup-lid">
           <span class="popup-lid__logo">JAM</span>
-          <button class="popup-lid__close">✕</button>
         </div>
-
-        <div class="popup-body">
-          <p class="popup-eyebrow">witaj z powrotem</p>
-          <p
-            class="popup-input popup-input--title"
-            style="
-              background: none;
-              padding-left: 0;
-              margin-bottom: 6px;
-              font-size: 20px;
-            "
-          >
+        <div class="popup-body" style="background: var(--linen);">
+          <p style="font-size: 18px; font-weight: 500; color: var(--espresso); margin-bottom: 2px;">
             Zaloguj się
           </p>
-
+          <p style="font-size: 11px; font-family: var(--font-mono); color: var(--walnut); margin-bottom: 16px;">
+            odkręć słoik
+          </p>
           <form id="login-form">
-            <input
-              class="popup-input"
-              type="email"
-              id="email"
-              placeholder="E-mail"
-              required
-            />
-            <input
-              class="popup-input"
-              type="password"
-              id="password"
-              placeholder="Hasło"
-              required
-            />
-            <p id="login-error" class="error hidden"></p>
-            <button class="popup-btn popup-btn--primary" type="submit">
+            <label class="field-input__label">email</label>
+            <input class="field-input__input" type="email" id="email" placeholder="" required style="margin-bottom: 10px;" />
+            <label class="field-input__label">hasło</label>
+            <input class="field-input__input" type="password" id="password" placeholder="" required style="margin-bottom: 14px;" />
+            <p id="login-error" class="error hidden" style="font-size: 11px; color: var(--jam-burgundy); margin-bottom: 8px;"></p>
+            <button class="popup-btn popup-btn--primary" type="submit" style="width: 100%;">
               Zaloguj się
             </button>
           </form>
         </div>
-
-        <div class="popup-footer">
-          <a class="popup-footer__link" href="#" id="go-register"
-            >Nie mam konta → Zarejestruj się</a
-          >
+        <div class="popup-footer" style="background: var(--linen);">
+          <a class="popup-footer__link" href="#" id="go-register" style="font-family: var(--font-mono);">
+            nie mam konta → zarejestruj się
+          </a>
         </div>
       </div>
-    </div>
 
+      <!-- Save application -->
+      <div id="view-save" class="view hidden">
+        <div class="popup-lid">
+          <span id="portal-badge" class="popup-lid__logo">JAM</span>
+        </div>
+        <div class="popup-body" style="background: var(--linen);">
+          <p class="popup-eyebrow">Wykryto ofertę</p>
+          <input class="field-input__input popup-field popup-field--title" type="text" id="f-title" placeholder="Tytuł stanowiska" required />
+          <div class="popup-field-row">
+            <input class="field-input__input popup-field popup-field--sm" type="text" id="f-company" placeholder="Firma" required />
+            <input class="field-input__input popup-field popup-field--sm" type="text" id="f-location" placeholder="Lokalizacja" />
+          </div>
+          <input class="field-input__input popup-field popup-field--salary" type="text" id="f-salary" placeholder="Widełki" />
+          <input class="field-input__input popup-field popup-field--portal" type="text" id="f-portal-display" placeholder="portal" readonly />
+          <input type="hidden" id="f-url" />
+          <textarea class="field-input__input popup-field popup-field--note" id="f-notes" placeholder="Dodaj notatkę..."></textarea>
+          <p id="save-error" class="error hidden"></p>
+          <p id="save-success" class="hidden" style="font-size: 11px; color: var(--brick); margin-bottom: 8px;">Zapisano!</p>
+          <form id="save-form">
+            <div class="popup-actions">
+              <button class="popup-btn popup-btn--primary" type="submit" id="btn-applied">Zaaplikowano</button>
+              <button class="popup-btn popup-btn--ghost" type="submit" id="btn-save-later">Zapisz</button>
+            </div>
+          </form>
+        </div>
+        <div class="popup-footer" style="background: var(--linen);">
+          <a class="popup-footer__link go-dashboard" href="#" style="font-family: var(--font-mono); color: var(--espresso);">Dashboard →</a>
+        </div>
+      </div>
+
+      <!-- Not a job page -->
+      <div id="view-not-job" class="view hidden">
+        <div class="popup-lid">
+          <span class="popup-lid__logo">JAM</span>
+        </div>
+        <div class="popup-body" style="background: var(--linen);">
+          <p style="font-size: 11px; font-family: var(--font-mono); color: var(--walnut); margin-bottom: 12px;">Tu nie ma ofert do zapisania</p>
+          <div class="popup-portal-card">
+            <a class="popup-portal-link" href="#" data-url="https://www.linkedin.com/jobs/">LinkedIn</a>
+            <a class="popup-portal-link" href="#" data-url="https://www.pracuj.pl/">Pracuj.pl</a>
+            <a class="popup-portal-link" href="#" data-url="https://justjoin.it/">JustJoin.it</a>
+          </div>
+        </div>
+        <div class="popup-footer" style="background: var(--linen);">
+          <a class="popup-footer__link go-dashboard" href="#" style="font-family: var(--font-mono); color: var(--espresso);">Dashboard »</a>
+        </div>
+      </div>
+
+    </div>
     <script type="module" src="popup.ts"></script>
   </body>
 </html>

@@ -36,7 +36,7 @@ export default defineManifest((env) => {
     },
   ],
 
-  permissions: ["storage", "activeTab"],
+  permissions: ["storage", "activeTab", "scripting"],
 
   host_permissions: [
     "http://localhost:3001/*",

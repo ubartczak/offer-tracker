@@ -1,4 +1,5 @@
 /// <reference types="chrome"/>
+import "../index.css";
 
 import type { JobData, SaveApplicationPayload } from "../types";
 
@@ -31,12 +32,34 @@ async function getActiveTab(): Promise<chrome.tabs.Tab | null> {
 async function scrapeJob(tab: chrome.tabs.Tab): Promise<JobData | null> {
   if (!tab.id) return null;
 
-  return new Promise((resolve) => {
-    chrome.tabs.sendMessage(tab.id!, { type: "SCRAPE_JOB" }, (data: JobData) => {
-      resolve(chrome.runtime.lastError ? null : data);
+  const tryMessage = () =>
+    new Promise<JobData | null>((resolve) => {
+      chrome.tabs.sendMessage(tab.id!, { type: "SCRAPE_JOB" }, (data: JobData) => {
+        resolve(chrome.runtime.lastError || !data ? null : data);
+      });
     });
-  });
+
+  const first = await tryMessage();
+  if (first) return first;
+
+  // Content script not yet injected (tab was open before extension loaded) — inject now
+  try {
+    await chrome.scripting.executeScript({
+      target: { tabId: tab.id },
+      files: ["src/content/content.ts"],
+    });
+    return await tryMessage();
+  } catch {
+    return null;
+  }
 }
+
+const PORTAL_DISPLAY: Record<string, string> = {
+  LINKEDIN: "LinkedIn",
+  JUSTJOIN: "JustJoin",
+  PRACUJ: "Pracuj.pl",
+  OTHER: "inne",
+};
 
 function fillForm(job: JobData) {
   cachedJobData = job;
@@ -45,6 +68,8 @@ function fillForm(job: JobData) {
   (document.getElementById("f-company") as HTMLInputElement).value = job.company;
   (document.getElementById("f-location") as HTMLInputElement).value = job.location ?? "";
   (document.getElementById("f-url") as HTMLInputElement).value = job.url;
+  (document.getElementById("f-portal-display") as HTMLInputElement).value =
+    PORTAL_DISPLAY[job.portal] ?? job.portal.toLowerCase();
 
   const salaryDisplay = job.salaryMin != null
     ? `${job.salaryMin}${job.salaryMax && job.salaryMax !== job.salaryMin ? `–${job.salaryMax}` : ""} ${job.currency ?? "PLN"}${job.salaryType === "HOURLY" ? "/h" : "/mies."}`
@@ -52,7 +77,6 @@ function fillForm(job: JobData) {
   (document.getElementById("f-salary") as HTMLInputElement).value = salaryDisplay;
 
   const badge = document.getElementById("portal-badge")!;
-  badge.textContent = job.portal;
   badge.dataset.portal = job.portal;
 }
 
@@ -104,10 +128,29 @@ document.getElementById("go-register")!.addEventListener("click", (e) => {
   chrome.tabs.create({ url: "http://localhost:5173/register" });
 });
 
+// Open dashboard in new tab (used in multiple views)
+document.querySelectorAll<HTMLAnchorElement>(".go-dashboard").forEach((link) => {
+  link.addEventListener("click", (e) => {
+    e.preventDefault();
+    chrome.tabs.create({ url: "http://localhost:5173" });
+  });
+});
+
+// Portal links in not-job view
+document.querySelectorAll<HTMLAnchorElement>(".popup-portal-link").forEach((link) => {
+  link.addEventListener("click", (e) => {
+    e.preventDefault();
+    const url = (e.currentTarget as HTMLAnchorElement).dataset.url;
+    if (url) chrome.tabs.create({ url });
+  });
+});
+
 // Logout
-document.getElementById("btn-logout")!.addEventListener("click", async () => {
-  await new Promise((r) => chrome.runtime.sendMessage({ type: "LOGOUT" }, r));
-  show("view-login");
+document.querySelectorAll<HTMLElement>(".btn-logout").forEach((btn) => {
+  btn.addEventListener("click", async () => {
+    await new Promise((r) => chrome.runtime.sendMessage({ type: "LOGOUT" }, r));
+    show("view-login");
+  });
 });
 
 // Save application
