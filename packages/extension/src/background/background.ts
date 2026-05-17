@@ -1,7 +1,9 @@
 import type { AuthTokens } from "../types";
 
 declare const __API_URL__: string;
+declare const __WEB_URL__: string;
 const API_URL = __API_URL__;
+const WEB_URL = __WEB_URL__;
 
 async function refreshAccessToken(): Promise<string | null> {
   const { refreshToken } = await chrome.storage.local.get("refreshToken");
@@ -56,26 +58,22 @@ async function apiFetch(path: string, options: RequestInit): Promise<Response> {
 }
 
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
-  if (message.type === "LOGIN") {
-    fetch(`${API_URL}/auth/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(message.payload),
-    })
-      .then((r) => r.json())
-      .then(async (data: AuthTokens & { error?: string }) => {
-        if (data.accessToken) {
-          await chrome.storage.local.set({
-            accessToken: data.accessToken,
-            refreshToken: data.refreshToken,
-          });
-          sendResponse({ ok: true });
-        } else {
-          sendResponse({ ok: false, error: data.error ?? "Błąd logowania" });
-        }
-      })
-      .catch(() => sendResponse({ ok: false, error: "Brak połączenia z API" }));
-    return true;
+  if (message.type === "SYNC_COOKIES") {
+    // Read httpOnly cookies set by the API and store as Bearer tokens
+    Promise.all([
+      chrome.cookies.get({ url: API_URL, name: "accessToken" }),
+      chrome.cookies.get({ url: API_URL, name: "refreshToken" }),
+    ]).then(([accessCookie, refreshCookie]) => {
+      if (accessCookie && refreshCookie) {
+        chrome.storage.local.set({
+          accessToken: accessCookie.value,
+          refreshToken: refreshCookie.value,
+        });
+      } else {
+        chrome.storage.local.remove(["accessToken", "refreshToken"]);
+      }
+    });
+    return false;
   }
 
   if (message.type === "LOGOUT") {
@@ -88,6 +86,15 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
         }).catch(() => {});
       }
       await chrome.storage.local.remove(["accessToken", "refreshToken"]);
+
+      // tell web-bridge in open dashboard tabs to clear the web session
+      const tabs = await chrome.tabs.query({});
+      for (const tab of tabs) {
+        if (tab.id && tab.url?.startsWith(WEB_URL)) {
+          chrome.tabs.sendMessage(tab.id, { type: "CLEAR_TOKENS" }).catch(() => {});
+        }
+      }
+
       sendResponse({ ok: true });
     });
     return true;

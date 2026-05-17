@@ -1,19 +1,19 @@
-const ACCESS_KEY = "offer-tracker:access";
-const REFRESH_KEY = "offer-tracker:refresh";
 const EMAIL_KEY = "offer-tracker:email";
 
-export function getAccessToken() { return localStorage.getItem(ACCESS_KEY); }
-export function getRefreshToken() { return localStorage.getItem(REFRESH_KEY); }
 export function getUserEmail() { return localStorage.getItem(EMAIL_KEY); }
 
-export function saveTokens(accessToken: string, refreshToken: string, email: string) {
-  localStorage.setItem(ACCESS_KEY, accessToken);
-  localStorage.setItem(REFRESH_KEY, refreshToken);
+export function saveSession(email: string) {
   localStorage.setItem(EMAIL_KEY, email);
+  window.dispatchEvent(new CustomEvent("offer-tracker:auth-changed"));
 }
 
-export function clearTokens() {
-  localStorage.removeItem(ACCESS_KEY);
-  localStorage.removeItem(REFRESH_KEY);
+export function clearSession() {
   localStorage.removeItem(EMAIL_KEY);
+  window.dispatchEvent(new CustomEvent("offer-tracker:auth-changed"));
 }
+
+// extension logout → clear web session and redirect
+window.addEventListener("offer-tracker:clear-tokens", () => {
+  localStorage.removeItem(EMAIL_KEY);
+  window.location.href = "/login";
+});

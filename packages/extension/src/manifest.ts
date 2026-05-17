@@ -34,13 +34,23 @@ export default defineManifest((env) => {
       js: ["src/content/content.ts"],
       run_at: "document_idle",
     },
+    {
+      matches: [
+        "http://localhost:5173/*",
+        "https://offer-tracker-web.vercel.app/*",
+      ],
+      js: ["src/content/web-bridge.ts"],
+      run_at: "document_idle",
+    },
   ],
 
-  permissions: ["storage", "activeTab"],
+  permissions: ["storage", "activeTab", "cookies"],
 
   host_permissions: [
     "http://localhost:3001/*",
+    "http://localhost:5173/*",
     "https://*.railway.app/*",
+    "https://offer-tracker-web.vercel.app/*",
   ],
   };
 });

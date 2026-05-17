@@ -2,10 +2,10 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import DashboardPage from "./pages/DashboardPage";
-import { getAccessToken } from "./lib/auth";
+import { getUserEmail } from "./lib/auth";
 
 function RequireAuth({ children }: { children: React.ReactNode }) {
-  return getAccessToken() ? <>{children}</> : <Navigate to="/login" replace />;
+  return getUserEmail() ? <>{children}</> : <Navigate to="/login" replace />;
 }
 
 export default function App() {

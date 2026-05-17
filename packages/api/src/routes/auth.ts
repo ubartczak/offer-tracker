@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { Router, Response } from "express";
 import { z } from "zod";
 import bcrypt from "bcryptjs";
 import { prisma } from "../lib/prisma";
@@ -9,6 +9,25 @@ import {
 } from "../lib/jwt";
 
 export const authRouter = Router();
+
+const isProd = process.env.NODE_ENV === "production";
+
+const COOKIE_BASE = {
+  httpOnly: true,
+  secure: isProd,
+  sameSite: (isProd ? "none" : "lax") as "none" | "lax",
+  path: "/",
+};
+
+function setTokenCookies(res: Response, accessToken: string, refreshToken: string) {
+  res.cookie("accessToken", accessToken, { ...COOKIE_BASE, maxAge: 15 * 60 * 1000 });
+  res.cookie("refreshToken", refreshToken, { ...COOKIE_BASE, maxAge: 7 * 24 * 60 * 60 * 1000 });
+}
+
+function clearTokenCookies(res: Response) {
+  res.clearCookie("accessToken", COOKIE_BASE);
+  res.clearCookie("refreshToken", COOKIE_BASE);
+}
 
 const registerSchema = z.object({
   email: z.string().email("Nieprawidłowy email"),
@@ -55,6 +74,8 @@ authRouter.post("/register", async (req, res) => {
       },
     });
 
+    setTokenCookies(res, accessToken, refreshToken);
+    // tokens also in body for non-browser clients (extension)
     res.status(201).json({ user, accessToken, refreshToken });
   } catch {
     res.status(500).json({ error: "Błąd serwera" });
@@ -96,6 +117,8 @@ authRouter.post("/login", async (req, res) => {
       },
     });
 
+    setTokenCookies(res, accessToken, refreshToken);
+    // tokens also in body for non-browser clients (extension)
     res.json({
       user: { id: user.id, email: user.email, createdAt: user.createdAt },
       accessToken,
@@ -106,9 +129,10 @@ authRouter.post("/login", async (req, res) => {
   }
 });
 
-// POST /auth/refresh
+// POST /auth/refresh — accepts cookie or body (extension uses body)
 authRouter.post("/refresh", async (req, res) => {
-  const { refreshToken } = req.body;
+  const refreshToken = req.cookies?.refreshToken ?? req.body?.refreshToken;
+
   if (!refreshToken) {
     res.status(400).json({ error: "Brak refresh tokenu" });
     return;
@@ -122,11 +146,11 @@ authRouter.post("/refresh", async (req, res) => {
     });
 
     if (!stored || stored.expiresAt < new Date()) {
+      clearTokenCookies(res);
       res.status(401).json({ error: "Refresh token nieważny" });
       return;
     }
 
-    // Rotate refresh token
     await prisma.refreshToken.delete({ where: { token: refreshToken } });
 
     const newPayload = { userId: payload.userId, email: payload.email };
@@ -141,17 +165,20 @@ authRouter.post("/refresh", async (req, res) => {
       },
     });
 
+    setTokenCookies(res, newAccessToken, newRefreshToken);
     res.json({ accessToken: newAccessToken, refreshToken: newRefreshToken });
   } catch {
+    clearTokenCookies(res);
     res.status(401).json({ error: "Refresh token nieważny" });
   }
 });
 
-// POST /auth/logout
+// POST /auth/logout — accepts cookie or body (extension uses body)
 authRouter.post("/logout", async (req, res) => {
-  const { refreshToken } = req.body;
+  const refreshToken = req.cookies?.refreshToken ?? req.body?.refreshToken;
   if (refreshToken) {
     await prisma.refreshToken.deleteMany({ where: { token: refreshToken } });
   }
+  clearTokenCookies(res);
   res.json({ ok: true });
 });

@@ -1,7 +1,7 @@
 import { useState, FormEvent } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { api } from "../lib/api";
-import { saveTokens } from "../lib/auth";
+import { saveSession } from "../lib/auth";
 import { AuthResponse } from "../types/api";
 
 export default function RegisterPage() {
@@ -20,7 +20,7 @@ export default function RegisterPage() {
     setLoading(true);
     try {
       const { data } = await api.post<AuthResponse>("/auth/register", { email, password });
-      saveTokens(data.accessToken, data.refreshToken, data.user.email);
+      saveSession(data.user.email);
       navigate("/");
     } catch (err: unknown) {
       const status = (err as { response?: { status?: number } }).response?.status;

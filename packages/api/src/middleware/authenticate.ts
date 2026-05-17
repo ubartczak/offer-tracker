@@ -10,14 +10,17 @@ export function authenticate(
   res: Response,
   next: NextFunction
 ): void {
-  const authHeader = req.headers.authorization;
+  // Accept httpOnly cookie (web) or Authorization Bearer (extension/API clients)
+  const token =
+    req.cookies?.accessToken ??
+    (req.headers.authorization?.startsWith("Bearer ")
+      ? req.headers.authorization.slice(7)
+      : undefined);
 
-  if (!authHeader?.startsWith("Bearer ")) {
+  if (!token) {
     res.status(401).json({ error: "Brak tokenu autoryzacji" });
     return;
   }
-
-  const token = authHeader.slice(7);
 
   try {
     req.user = verifyAccessToken(token);

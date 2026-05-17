@@ -1,14 +1,11 @@
 import axios from "axios";
-import { getAccessToken, getRefreshToken, saveTokens, clearTokens } from "./auth";
+import { clearSession } from "./auth";
 
 const BASE_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3001";
 
-export const api = axios.create({ baseURL: BASE_URL });
-
-api.interceptors.request.use((config) => {
-  const token = getAccessToken();
-  if (token) config.headers.Authorization = `Bearer ${token}`;
-  return config;
+export const api = axios.create({
+  baseURL: BASE_URL,
+  withCredentials: true, // send/receive httpOnly cookies
 });
 
 let refreshing: Promise<void> | null = null;
@@ -24,13 +21,12 @@ api.interceptors.response.use(
 
     if (!refreshing) {
       refreshing = (async () => {
-        const rt = getRefreshToken();
-        if (!rt) { clearTokens(); window.location.href = "/login"; return; }
         try {
-          const { data } = await axios.post(`${BASE_URL}/auth/refresh`, { refreshToken: rt });
-          saveTokens(data.accessToken, data.refreshToken, data.email ?? "");
+          await axios.post(`${BASE_URL}/auth/refresh`, {}, { withCredentials: true });
+          // new cookies set by server; notify extension to sync
+          window.dispatchEvent(new CustomEvent("offer-tracker:auth-changed"));
         } catch {
-          clearTokens();
+          clearSession();
           window.location.href = "/login";
         } finally {
           refreshing = null;
@@ -39,7 +35,6 @@ api.interceptors.response.use(
     }
 
     await refreshing;
-    original.headers.Authorization = `Bearer ${getAccessToken()}`;
     return api(original);
   }
 );

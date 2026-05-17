@@ -2,7 +2,7 @@ import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { api } from "../lib/api";
-import { clearTokens, getUserEmail } from "../lib/auth";
+import { clearSession, getUserEmail } from "../lib/auth";
 import { ApplicationsResponse, StatsResponse, JobApplication, ApplicationStatus, Portal } from "../types/api";
 import { useColumnConfig } from "../hooks/useColumnConfig";
 import ColumnConfigurator from "../components/ColumnConfigurator";
@@ -100,7 +100,7 @@ export default function DashboardPage() {
 
   async function handleLogout() {
     try { await api.post("/auth/logout"); } catch { /* ignore */ }
-    clearTokens();
+    clearSession();
     navigate("/login");
   }
 

@@ -1,5 +1,8 @@
 /// <reference types="chrome"/>
 
+declare const __WEB_URL__: string;
+const WEB_URL = __WEB_URL__;
+
 import type { JobData, SaveApplicationPayload } from "../types";
 
 const JOB_PORTALS = ["linkedin.com", "justjoin.it", "pracuj.pl"];
@@ -18,7 +21,7 @@ function setError(elId: string, msg: string) {
 }
 
 function clearMessages() {
-  ["login-error", "save-error", "save-success"].forEach((id) => {
+  ["save-error", "save-success"].forEach((id) => {
     document.getElementById(id)!.classList.add("hidden");
   });
 }
@@ -62,7 +65,7 @@ async function init() {
   );
 
   if (!authenticated) {
-    show("view-login");
+    show("view-not-auth");
     return;
   }
 
@@ -79,23 +82,15 @@ async function init() {
   if (job) fillForm(job);
 }
 
-// Login
-document.getElementById("login-form")!.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  clearMessages();
+// Open login/register in dashboard
+document.getElementById("btn-open-login")!.addEventListener("click", () => {
+  chrome.tabs.create({ url: `${WEB_URL}/login` });
+  window.close();
+});
 
-  const email = (document.getElementById("email") as HTMLInputElement).value;
-  const password = (document.getElementById("password") as HTMLInputElement).value;
-
-  const result = await new Promise<{ ok: boolean; error?: string }>((r) =>
-    chrome.runtime.sendMessage({ type: "LOGIN", payload: { email, password } }, r)
-  );
-
-  if (result.ok) {
-    await init();
-  } else {
-    setError("login-error", result.error ?? "Błąd logowania");
-  }
+document.getElementById("btn-open-register")!.addEventListener("click", () => {
+  chrome.tabs.create({ url: `${WEB_URL}/register` });
+  window.close();
 });
 
 // Logout

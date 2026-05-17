@@ -8,6 +8,7 @@ export default defineConfig(({ mode }) => {
     plugins: [crx({ manifest })],
     define: {
       __API_URL__: JSON.stringify(env.VITE_API_URL ?? "http://localhost:3001"),
+      __WEB_URL__: JSON.stringify(env.VITE_WEB_URL ?? "http://localhost:5173"),
     },
   };
 });
